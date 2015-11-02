@@ -12,21 +12,21 @@ namespace Vertrackt.Tests.Geometry
     [TestFixture]
     public class PointTest
     {
-        [Test, TestCaseSource(nameof(AddTests))]
+        [TestCaseSource(nameof(AddTests))]
         public void Add(Point a, Point b, Point result)
         {
             (a + b).ShouldBeEqualTo(result);
         }
 
 
-        [Test, TestCaseSource(nameof(EqualsTests))]
+        [TestCaseSource(nameof(EqualsTests))]
         public void Equals(Point a, Point b, bool result)
         {
             (a == b).ShouldBeEqualTo(result);
             (a.Equals(b)).ShouldBeEqualTo(result);
         }
 
-        [Test, TestCaseSource(nameof(EqualsTests))]
+        [TestCaseSource(nameof(EqualsTests))]
         public void CompareHashes(Point a, Point b, bool result)
         {
             (a.GetHashCode() == b.GetHashCode()).ShouldBeEqualTo(result);

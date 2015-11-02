@@ -6,25 +6,52 @@ using System.Threading.Tasks;
 
 namespace Vertrackt.Geometry
 {
-    public class Point
+    public struct Point
     {
-        private readonly int _xPos;
-        private readonly int _yPos;
-        private int _xSpeed;
-        private int _ySpeed;
-
-        public Point(int xPos, int yPos)
+        public bool Equals(Point other)
         {
-            _xPos = xPos;
-            _yPos = yPos;
+            return X == other.X && Y == other.Y;
         }
 
-        public Point Iterate(int xAcc, int yAcc)
+        public override bool Equals(object obj)
         {
-            var newX = _xPos + _xSpeed;
-            var newY = _yPos + _ySpeed;
+            if (!(obj is Point))
+            {
+                return false;
+            }
 
-            return new Point(newX, newY);
+            return ((Point)obj) == this;
         }
+
+        public override int GetHashCode()
+        {
+            return (X * 397) ^ Y;
+        }
+
+        public Point(int x, int y)
+        {
+            X = x;
+            Y = y;
+        }
+
+        public static Point operator +(Point a, Point b)
+        {
+            return new Point(a.X + b.X, a.Y + b.Y);
+        }
+
+
+        public static bool operator ==(Point a, Point b)
+        {
+            return a.X == b.X && a.Y == b.Y;
+        }
+
+        public static bool operator !=(Point a, Point b)
+        {
+            return !(a == b);
+        }
+
+        public int X { get; }
+
+        public int Y { get; }
     }
 }

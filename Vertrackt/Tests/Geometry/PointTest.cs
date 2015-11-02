@@ -26,7 +26,7 @@ namespace Vertrackt.Tests.Geometry
             (a.Equals(b)).ShouldBeEqualTo(result);
         }
 
-        [Test, TestCaseSource(nameof(HashTests))]
+        [Test, TestCaseSource(nameof(EqualsTests))]
         public void CompareHashes(Point a, Point b, bool result)
         {
             (a.GetHashCode() == b.GetHashCode()).ShouldBeEqualTo(result);
@@ -48,14 +48,5 @@ namespace Vertrackt.Tests.Geometry
             yield return new object[] { new Point(-3, -5), new Point(3, -5), false };
         }
 
-
-        private static IEnumerable<object> HashTests()
-        {
-            yield return new object[] { new Point(1, 2), new Point(2, 4), false };
-            yield return new object[] { new Point(0, 0), new Point(0, 0), true };
-            yield return new object[] { new Point(3, 5), new Point(3, 5), true };
-            yield return new object[] { new Point(-3, -5), new Point(-3, -5), true };
-            yield return new object[] { new Point(-3, -5), new Point(3, -5), false };
-        }
     }
 }

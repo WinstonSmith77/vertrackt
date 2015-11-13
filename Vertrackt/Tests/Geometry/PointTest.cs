@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using FluentAssert;
+using FluentAssertions;
 using NUnit.Framework;
 using Vertrackt.Geometry;
 
@@ -15,20 +15,20 @@ namespace Vertrackt.Tests.Geometry
         [TestCaseSource(nameof(AddTests))]
         public void Add(Point a, Point b, Point result)
         {
-            (a + b).ShouldBeEqualTo(result);
+            (a + b).Should().Be(result);
         }
 
         [TestCaseSource(nameof(EqualsTests))]
         public void Equals(Point a, Point b, bool result)
         {
-            (a == b).ShouldBeEqualTo(result);
-            (a.Equals(b)).ShouldBeEqualTo(result);
+            (a == b).Should().Be(result);
+            (a.Equals(b)).Should().Be(result);
         }
 
         [TestCaseSource(nameof(EqualsTests))]
         public void CompareHashes(Point a, Point b, bool result)
         {
-            (a.GetHashCode() == b.GetHashCode()).ShouldBeEqualTo(result);
+            (a.GetHashCode() == b.GetHashCode()).Should().Be(result);
         }
 
         private static IEnumerable<object> AddTests()

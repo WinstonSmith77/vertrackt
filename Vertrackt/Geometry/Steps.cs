@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Vertrackt.Geometry
 {
-    public class Steps
+    public static class Steps
     {
         public const int MaxAcceleation = 10;
 
@@ -35,5 +35,12 @@ namespace Vertrackt.Geometry
         }
 
         public static IEnumerable<Point> AllWithoutEmpty { get; }
+
+        public static double DeltaAngle(double a, double b)
+        {
+            var delta = Math.Abs(a - b);
+
+            return Math.Min(2 * Math.PI - delta, delta);
+        }
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using FluentAssert;
+using FluentAssertions;
 using NUnit.Framework;
 using Vertrackt.Geometry;
 
@@ -17,8 +17,8 @@ namespace Vertrackt.Tests.Geometry
         {
             var car = steps.Aggregate(new Car(start), (current, step) => current.Iterate(step));
 
-            car.Position.ShouldBeEqualTo(end);
-            car.Speed.ShouldBeEqualTo(endSpeed);
+            car.Position.Should().Be(end);
+            car.Speed.Should().Be(endSpeed);
         }
 
         [TestCaseSource(nameof(CarTestsWithOutEndSpeed))]
@@ -26,7 +26,7 @@ namespace Vertrackt.Tests.Geometry
         {
             var car = steps.Aggregate(new Car(start), (current, step) => current.Iterate(step));
 
-            car.Position.ShouldBeEqualTo(end);
+            car.Position.Should().Be(end);
         }
 
         private static IEnumerable<object> CarTestsEndSpeed()

@@ -18,7 +18,6 @@ namespace Vertrackt.Tests.Geometry
             (a + b).ShouldBeEqualTo(result);
         }
 
-
         [TestCaseSource(nameof(EqualsTests))]
         public void Equals(Point a, Point b, bool result)
         {

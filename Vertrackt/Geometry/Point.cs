@@ -8,6 +8,11 @@ namespace Vertrackt.Geometry
 {
     public struct Point
     {
+        public override string ToString()
+        {
+            return $"({X},{Y})";
+        }
+
         public bool Equals(Point other)
         {
             return X == other.X && Y == other.Y;

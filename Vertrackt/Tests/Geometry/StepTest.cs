@@ -16,10 +16,10 @@ namespace Vertrackt.Tests.Geometry
         public void Test()
         {
             var steps = new Steps();
-            var allShorterOrEqaulThan10 =
+            var allShorterOrEqualThan10 =
                 steps.All.All(item => item.X * item.X + item.Y * item.Y <= Steps.MaxAcceleation * Steps.MaxAcceleation);
 
-            allShorterOrEqaulThan10.ShouldBeTrue();
+            allShorterOrEqualThan10.ShouldBeTrue();
         }
     }
 }

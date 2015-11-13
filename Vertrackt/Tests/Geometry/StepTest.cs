@@ -29,7 +29,7 @@ namespace Vertrackt.Tests.Geometry
         public void TestAngle(double a, double b, double result)
         {
             var delta = Steps.DeltaAngle(a, b);
-            delta.Should().BeApproximately(result, 1e-9);
+            delta.Should().BeApproximately(result, 1e-15);
         }
 
         private static IEnumerable<object> AngleTests()
@@ -39,6 +39,11 @@ namespace Vertrackt.Tests.Geometry
 
             yield return new object[] { 2 * Math.PI, 0, 0 };
             yield return new object[] { 0, 2 * Math.PI, 0 };
+
+            yield return new object[] { 2 * Math.PI / 180, 358 * Math.PI / 180, 4 * Math.PI / 180 };
+            yield return new object[] { 358 * Math.PI / 180, 2 * Math.PI / 180, 4 * Math.PI / 180 };
+
+            yield return new object[] { 2 * Math.PI / 180, 2 * Math.PI / 180, 0 * Math.PI / 180 };
         }
     }
 }

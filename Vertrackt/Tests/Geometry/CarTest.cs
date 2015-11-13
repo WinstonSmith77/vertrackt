@@ -12,22 +12,34 @@ namespace Vertrackt.Tests.Geometry
     [TestFixture]
     public class CarTest
     {
-        [TestCaseSource(nameof(CarTests))]
+        [TestCaseSource(nameof(CarTestsEndSpeed))]
         public void MoveTest(Point start, Point end, Point endSpeed, Point[] steps)
         {
-            var car = new Car(start);
-
-            car = steps.Aggregate(car, (current, step) => current.Iterate(step));
+            var car = steps.Aggregate(new Car(start), (current, step) => current.Iterate(step));
 
             car.Position.ShouldBeEqualTo(end);
             car.Speed.ShouldBeEqualTo(endSpeed);
         }
 
-        private static IEnumerable<object> CarTests()
+        [TestCaseSource(nameof(CarTestsWithOutEndSpeed))]
+        public void MoveTestWithoutEndSpeed(Point start, Point end, Point[] steps)
         {
-            yield return new object[] { new Point(0, 0), new Point(2, 2), new Point(1, 1), new[] { new Point(1, 1), new Point(0, 0), new Point(0, 0) } };
-            yield return new object[] { new Point(10, 0), new Point(25, 0), new Point(10, 0), new[] { new Point(5, 0), new Point(5, 0), new Point(0, 0) } };
-            yield return new object[] { new Point(0, 10), new Point(0, 25), new Point(0, 10), new[] { new Point(0, 5), new Point(0, 5), new Point(0, 0) } };
+            var car = steps.Aggregate(new Car(start), (current, step) => current.Iterate(step));
+
+            car.Position.ShouldBeEqualTo(end);
+        }
+
+        private static IEnumerable<object> CarTestsEndSpeed()
+        {
+            yield return new object[] { new Point(0, 0), new Point(3, 3), new Point(1, 1), new[] { new Point(1, 1), new Point(0, 0), new Point(0, 0) } };
+            yield return new object[] { new Point(10, 0), new Point(35, 0), new Point(10, 0), new[] { new Point(5, 0), new Point(5, 0), new Point(0, 0) } };
+            yield return new object[] { new Point(0, 10), new Point(0, 35), new Point(0, 10), new[] { new Point(0, 5), new Point(0, 5), new Point(0, 0) } };
+        }
+
+
+        private static IEnumerable<object> CarTestsWithOutEndSpeed()
+        {
+            yield return new object[] { new Point(120, 180), new Point(165, 171), new[] { new Point(8, -6), new Point(10, 0), new Point(1, 9) } };
         }
 
 

@@ -31,8 +31,8 @@ namespace Vertrackt.Geometry
 
         public Car Iterate(Point acceleration)
         {
-            var newPosition = Position + Speed;
             var newSpeed = Speed + acceleration;
+            var newPosition = Position + newSpeed;
 
             return new Car(newPosition, newSpeed);
         }

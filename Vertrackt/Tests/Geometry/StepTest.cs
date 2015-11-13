@@ -15,11 +15,14 @@ namespace Vertrackt.Tests.Geometry
         [Test]
         public void Test()
         {
-            var steps = new Steps();
             var allShorterOrEqualThan10 =
-                steps.All.All(item => item.X * item.X + item.Y * item.Y <= Steps.MaxAcceleation * Steps.MaxAcceleation);
+                Steps.AllWithoutEmpty.All(item => item.X * item.X + item.Y * item.Y <= Steps.MaxAcceleation * Steps.MaxAcceleation);
+
+            var noEmpty =
+                !Steps.AllWithoutEmpty.Any(item => item.X == 0 && item.Y == 0);
 
             allShorterOrEqualThan10.ShouldBeTrue();
+            noEmpty.ShouldBeTrue();
         }
     }
 }

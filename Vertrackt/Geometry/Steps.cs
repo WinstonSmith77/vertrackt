@@ -10,7 +10,7 @@ namespace Vertrackt.Geometry
     {
         public const int MaxAcceleation = 10;
 
-        public Steps()
+        static Steps()
         {
             var all = new List<Point>();
             for (int x = -MaxAcceleation; x <= MaxAcceleation; x++)
@@ -22,13 +22,18 @@ namespace Vertrackt.Geometry
                     {
                         continue;
                     }
+
+                    if (x == 0 && y == 0)
+                    {
+                        continue;
+                    }
                     all.Add(new Point(x, y));
                 }
             }
 
-            All = all;
+            AllWithoutEmpty = all;
         }
 
-        public IEnumerable<Point> All { get; }
+        public static IEnumerable<Point> AllWithoutEmpty { get; }
     }
 }

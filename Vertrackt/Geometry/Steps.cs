@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NUnit.Framework.Constraints;
 
 namespace Vertrackt.Geometry
 {
@@ -36,12 +37,16 @@ namespace Vertrackt.Geometry
 
         public static IEnumerable<Point> OrderByAngel(double angle)
         {
-            var result = new List<Point>(AllWithoutEmpty);
-
-            result.Sort(new PointSorter(angle));
-
-            return result;
+            return _sortedForAngle.GetValueOrCreateType(angle, () =>
+            {
+                var result = new List<Point>(AllWithoutEmpty);
+                result.Sort(new PointSorter(angle));
+                return result;
+            });
         }
+
+        private static readonly Dictionary<double, IEnumerable<Point>> _sortedForAngle = new Dictionary<double, IEnumerable<Point>>();
+
 
         public static IEnumerable<Point> AllWithoutEmpty { get; }
 

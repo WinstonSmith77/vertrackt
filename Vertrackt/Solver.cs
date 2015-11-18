@@ -39,7 +39,7 @@ namespace Vertrackt
 
     public static class Solver
     {
-        public static IEnumerable<Point> DoIt(Point start, Point end)
+        public static IEnumerable<Point> DoIt(Point start, Point end, int maxSteps)
         {
             var iterations = new Stack<IterationStep>();
             var currentCar = new Car(start);
@@ -51,7 +51,7 @@ namespace Vertrackt
                 var steps = Steps.OrderByAngle(direction);
 
                 IterationStep iteration;
-                if (HaveToTrackBack(iterations))
+                if (HaveToTrackBack(iterations, maxSteps))
                 {
                     iteration = TrackBackOneStep(iterations, ref currentCar);
                 }
@@ -70,9 +70,9 @@ namespace Vertrackt
             }
         }
 
-        private static bool HaveToTrackBack(Stack<IterationStep> iterations)
+        private static bool HaveToTrackBack(Stack<IterationStep> iterations, int maxSteps)
         {
-            return iterations.Count > 5;
+            return iterations.Count > maxSteps;
         }
 
         private static IterationStep TrackBackOneStep(Stack<IterationStep> iterations, ref Car currentCar)

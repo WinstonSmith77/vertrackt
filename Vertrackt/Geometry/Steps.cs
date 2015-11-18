@@ -49,11 +49,5 @@ namespace Vertrackt.Geometry
 
 
         public static IEnumerable<Point> AllWithoutEmpty { get; }
-
-        public static double DeltaAngle(double a, double b)
-        {
-            var delta = Math.Abs(a - b);
-            return Math.Min(2 * Math.PI - delta, delta);
-        }
     }
 }

@@ -29,6 +29,8 @@ namespace Vertrackt
             return Direction.ToString();
         }
 
+        public bool CanNext => Index < Direction.Length - 1;
+
         public IterationStep Next()
         {
             return new IterationStep(Car, Steps, Index + 1);
@@ -41,37 +43,48 @@ namespace Vertrackt
         {
             var iterations = new Stack<IterationStep>();
             var currentCar = new Car(start);
-            var lastDistance = double.MaxValue;
 
             for (;;)
             {
                 var remainingDelta = end - currentCar.Position;
                 var direction = remainingDelta.Angle;
                 var steps = Steps.OrderByAngle(direction);
-                var distance = remainingDelta.Length;
 
                 IterationStep iteration;
-                if (distance >= lastDistance)
+                if (HaveToTrackBack(iterations))
                 {
-                    var lastIteration = iterations.Pop();
-                    currentCar = lastIteration.Car;
-                    iteration = lastIteration.Next();
+                    iteration = TrackBackOneStep(iterations, ref currentCar);
                 }
                 else
                 {
                     iteration = new IterationStep(currentCar, steps, 0);
                 }
 
-              
                 iterations.Push(iteration);
-
                 currentCar = currentCar.Iterate(iteration.Direction);
-                lastDistance = distance;
+
+                if (currentCar.Position == end && currentCar.Speed == Point.Zero)
+                {
+                    return iterations.Reverse().Select(item => item.Direction);
+                }
             }
+        }
 
-            var result = new List<Point>();
+        private static bool HaveToTrackBack(Stack<IterationStep> iterations)
+        {
+            return iterations.Count > 5;
+        }
 
-            return result;
+        private static IterationStep TrackBackOneStep(Stack<IterationStep> iterations, ref Car currentCar)
+        {
+            var lastIteration = iterations.Pop();
+            currentCar = lastIteration.Car;
+
+            if (lastIteration.CanNext)
+            {
+                return lastIteration.Next();
+            }
+            return TrackBackOneStep(iterations, ref currentCar);
         }
     }
 }

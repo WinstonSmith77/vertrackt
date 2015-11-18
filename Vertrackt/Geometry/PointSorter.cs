@@ -17,8 +17,8 @@ namespace Vertrackt.Geometry
 
         public int Compare(Point a, Point b)
         {
-            var deltaA = Steps.DeltaAngle(_angle, a.Angle);
-            var deltaB = Steps.DeltaAngle(_angle, b.Angle);
+            var deltaA = Helpers.DeltaAngle(_angle, a.Angle);
+            var deltaB = Helpers.DeltaAngle(_angle, b.Angle);
 
             var result = deltaA.CompareTo(deltaB);
 

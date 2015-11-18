@@ -28,7 +28,7 @@ namespace Vertrackt.Tests.Geometry
         [TestCaseSource(nameof(AngleDeltaTests))]
         public void TestAngleDelta(double a, double b, double result)
         {
-            var delta = Steps.DeltaAngle(a, b);
+            var delta = Helpers.DeltaAngle(a, b);
             delta.Should().BeApproximately(result, 1e-15);
         }
 
@@ -45,7 +45,7 @@ namespace Vertrackt.Tests.Geometry
                 var b = steps[i + 1];
                 var c = steps[i + 2];
 
-                Steps.DeltaAngle(a.Angle, angle).Should().BeLessOrEqualTo(Steps.DeltaAngle(b.Angle, angle));
+                Helpers.DeltaAngle(a.Angle, angle).Should().BeLessOrEqualTo(Helpers.DeltaAngle(b.Angle, angle));
                 var aAgreaterOrEqualToB = a.LengthSqr >= b.LengthSqr;
                 var bAgreaterOrEqualToC = b.LengthSqr >= c.LengthSqr;
 

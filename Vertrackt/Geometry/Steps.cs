@@ -40,9 +40,16 @@ namespace Vertrackt.Geometry
             return _sortedForAngle.GetValueOrCreateType(angle, () =>
             {
                 var result = new List<Point>(AllWithoutEmpty);
+                result = result.Where(item => FilterDirections(item, angle)).ToList();
                 result.Sort(new PointSorter(angle));
                 return result;
             });
+        }
+
+
+        private static bool FilterDirections(Point item, double direction)
+        {
+            return Helpers.DeltaAngle(item.Angle, direction) < 1 * Math.PI / 180;
         }
 
         private static readonly Dictionary<double, List<Point>> _sortedForAngle = new Dictionary<double, List<Point>>();

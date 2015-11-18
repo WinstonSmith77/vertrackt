@@ -10,11 +10,8 @@ namespace Vertrackt
 {
     class IterationStep
     {
-        private readonly IterationStep _before;
-
-        public IterationStep(Car car, IReadOnlyList<Point> steps, int index, IterationStep before)
+        public IterationStep(Car car, IReadOnlyList<Point> steps, int index)
         {
-            _before = before;
             Car = car;
             Steps = steps;
             Index = index;
@@ -33,14 +30,14 @@ namespace Vertrackt
             return Direction.ToString();
         }
 
-        public IterationStep Next()
+        public IterationStep Next(Stack<IterationStep> stack)
         {
             var canNext = Index < Steps.Count - 1;
             if (canNext)
             {
-                return new IterationStep(Car, Steps, Index + 1, _before);
+                return new IterationStep(Car, Steps, Index + 1);
             }
-            return _before.Next();
+            return stack.Pop().Next(stack);
         }
     }
 
@@ -64,12 +61,12 @@ namespace Vertrackt
 
                     iteration = temp.Item1;
                     currentCar = temp.Item2;
-                    direction = temp.Item3;
+                    direction = (end - currentCar.Position).Angle;
                 }
                 else
                 {
                     var steps = CalcSteps(remainingDelta, direction);
-                    iteration = new IterationStep(currentCar, steps, 0, iterations.Count == 0 ? null : iterations.Peek());
+                    iteration = new IterationStep(currentCar, steps, 0);
                 }
 
                 iterations.Push(iteration);
@@ -88,7 +85,7 @@ namespace Vertrackt
             List<Point> steps;
             if (remainingDelta == Point.Zero)
             {
-                steps = new List<Point> {Point.Zero};
+                steps = new List<Point> { Point.Zero };
             }
             else
             {
@@ -107,13 +104,12 @@ namespace Vertrackt
             return iterations.Count > maxSteps || condition;
         }
 
-        private static Tuple<IterationStep, Car, double> TrackBackOneStep(Stack<IterationStep> iterations)
+        private static Tuple<IterationStep, Car> TrackBackOneStep(Stack<IterationStep> iterations)
         {
-            
-            övar currentIteration = iterations.Pop().Next();
+            var currentIteration = iterations.Pop().Next(iterations);
             var currentCar = currentIteration.Car;
 
-            return Tuple.Create(currentIteration, currentCar, currentIteration.Direction.Angle);
+            return Tuple.Create(currentIteration, currentCar);
         }
     }
 }

@@ -47,31 +47,30 @@ namespace Vertrackt
         {
             var iterations = new Stack<IterationStep>();
             var currentCar = new Car(start);
-            double? lastDirection = null;
+
+
+            var remainingDelta = end - currentCar.Position;
+            var direction = remainingDelta.Angle;
+            var steps = CalcSteps(remainingDelta, direction);
 
             for (;;)
             {
-                var remainingDelta = end - currentCar.Position;
-                var direction = remainingDelta.Angle;
-
                 IterationStep iteration;
-                if (HaveToTrackBack(iterations, maxSteps, lastDirection.HasValue && lastDirection != direction))
+                if (NeedToTrackBack(iterations, maxSteps,/* (currentCar.Position == end) ||  lastDirection.HasValue && lastDirection != direction)*/false))
                 {
                     var temp = TrackBackOneStep(iterations);
 
                     iteration = temp.Item1;
                     currentCar = temp.Item2;
-                    direction = (end - currentCar.Position).Angle;
                 }
                 else
                 {
-                    var steps = CalcSteps(remainingDelta, direction);
+                  
                     iteration = new IterationStep(currentCar, steps, 0);
                 }
 
                 iterations.Push(iteration);
                 currentCar = currentCar.Iterate(iteration.Direction);
-                lastDirection = direction;
 
                 if (currentCar.Position == end && currentCar.Speed == Point.Zero)
                 {
@@ -80,18 +79,13 @@ namespace Vertrackt
             }
         }
 
-        private static List<Point> CalcSteps(Point remainingDelta, double direction)
+        private static List<Point> CalcSteps(Point remainingDelta,  double direction)
         {
-            List<Point> steps;
             if (remainingDelta == Point.Zero)
             {
-                steps = new List<Point> { Point.Zero };
+                return new List<Point> {Point.Zero};
             }
-            else
-            {
-                steps = Steps.OrderByAngle(direction).ToList();
-            }
-            return steps;
+            return Steps.OrderByAngle(direction).ToList();
         }
 
         private static IEnumerable<Point> ExtractResults(Stack<IterationStep> iterations)
@@ -99,7 +93,7 @@ namespace Vertrackt
             return iterations.Reverse().Select(item => item.Direction);
         }
 
-        private static bool HaveToTrackBack(Stack<IterationStep> iterations, int maxSteps, bool condition)
+        private static bool NeedToTrackBack(Stack<IterationStep> iterations, int maxSteps, bool condition)
         {
             return iterations.Count > maxSteps || condition;
         }

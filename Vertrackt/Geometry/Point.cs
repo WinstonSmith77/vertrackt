@@ -76,6 +76,8 @@ namespace Vertrackt.Geometry
             get { return _zero; }
         }
 
-        private static readonly Point _zero = new Point(0,0);
+        private static readonly Point _zero = new Point(0, 0);
+
+        public Point Inverse => new Point(-X, -Y);
     }
 }

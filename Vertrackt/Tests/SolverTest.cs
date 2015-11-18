@@ -16,7 +16,7 @@ namespace Vertrackt.Tests
         public static void Test()
         {
             var start = new Point(0, 0);
-            var end = new Point(20, 0);
+            var end = new Point(10, 0);
             var result = Solver.DoIt(start, end, 5).ToList();
 
             var shouldBeEnd = result.Aggregate(new Car(start), (car, acc) => car.Iterate(acc));

@@ -9,18 +9,30 @@ namespace Vertrackt
 {
     struct IterationStep
     {
-        public IterationStep(Car currentCar, List<Point> steps, int index)
+        public IterationStep(Car car, IReadOnlyList<Point> steps, int index)
         {
-            CurrentCar = currentCar;
+            Car = car;
             Steps = steps;
             Index = index;
         }
 
-        public Car CurrentCar { get; }
+        public Car Car { get; }
 
-        public List<Point> Steps { get; }
+        public IReadOnlyList<Point> Steps { get; }
 
         public int Index { get; }
+
+        public Point Direction => Steps[Index];
+
+        public override string ToString()
+        {
+            return Direction.ToString();
+        }
+
+        public IterationStep Next()
+        {
+            return new IterationStep(Car, Steps, Index + 1);
+        }
     }
 
     public static class Solver
@@ -29,18 +41,32 @@ namespace Vertrackt
         {
             var iterations = new Stack<IterationStep>();
             var currentCar = new Car(start);
+            var lastDistance = double.MaxValue;
 
             for (;;)
             {
                 var remainingDelta = end - currentCar.Position;
                 var direction = remainingDelta.Angle;
-                var distance = remainingDelta.Length;
                 var steps = Steps.OrderByAngle(direction);
-                var iteration = new IterationStep(currentCar, steps, 0);
+                var distance = remainingDelta.Length;
+
+                IterationStep iteration;
+                if (distance >= lastDistance)
+                {
+                    var lastIteration = iterations.Pop();
+                    currentCar = lastIteration.Car;
+                    iteration = lastIteration.Next();
+                }
+                else
+                {
+                    iteration = new IterationStep(currentCar, steps, 0);
+                }
+
+              
                 iterations.Push(iteration);
 
-                currentCar = currentCar.Iterate(iteration.Steps[iteration.Index]);
-
+                currentCar = currentCar.Iterate(iteration.Direction);
+                lastDistance = distance;
             }
 
             var result = new List<Point>();

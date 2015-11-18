@@ -14,7 +14,7 @@ namespace Vertrackt.Tests
         [Test]
         public static void Test()
         {
-          var result =  Solver.DoIt(new Point(0, 0), new Point(100, 100));
+          var result =  Solver.DoIt(new Point(0, 0), new Point(30, 30));
         }
 
     }

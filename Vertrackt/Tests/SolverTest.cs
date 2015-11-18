@@ -17,12 +17,15 @@ namespace Vertrackt.Tests
         {
             var start = new Point(0, 0);
             var end = new Point(10, 0);
-            var result = Solver.DoIt(start, end, 5).ToList();
+            var results = Solver.DoIt(start, end, 4).ToList();
 
-            var shouldBeEnd = result.Aggregate(new Car(start), (car, acc) => car.Iterate(acc));
+            results.ForEach(result =>
+            {
+                var shouldBeEnd = result.Aggregate(new Car(start), (car, acc) => car.Iterate(acc));
 
-            shouldBeEnd.Position.Should().Be(end);
-            shouldBeEnd.Speed.Should().Be(Point.Zero);
+                shouldBeEnd.Position.Should().Be(end);
+                shouldBeEnd.Speed.Should().Be(Point.Zero);
+            });
         }
 
     }

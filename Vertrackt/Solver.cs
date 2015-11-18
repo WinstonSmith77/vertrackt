@@ -37,49 +37,65 @@ namespace Vertrackt
             {
                 return new IterationStep(Car, Steps, Index + 1);
             }
+
+            if (stack.Count == 0)
+            {
+                throw new NoMoreSolutions();
+            }
+
             return stack.Pop().Next(stack);
         }
     }
 
     public static class Solver
     {
-        public static IEnumerable<Point> DoIt(Point start, Point end, int maxSteps)
+        public static IReadOnlyList<IReadOnlyList<Point>> DoIt(Point start, Point end, int maxSteps)
         {
-            var iterations = new Stack<IterationStep>();
-            var currentCar = new Car(start);
-
-
-            var remainingDelta = end - currentCar.Position;
-            var direction = remainingDelta.Angle;
-            var steps = CalcSteps(remainingDelta, direction);
-
-            for (;;)
+            var allResults = new List<List<Point>>();
+            try
             {
-                IterationStep iteration;
-                if (NeedToTrackBack(iterations, maxSteps,/* (currentCar.Position == end) ||  lastDirection.HasValue && lastDirection != direction)*/false))
-                {
-                    var temp = TrackBackOneStep(iterations);
+                var iterations = new Stack<IterationStep>();
+                var currentCar = new Car(start);
 
-                    iteration = temp.Item1;
-                    currentCar = temp.Item2;
-                }
-                else
-                {
-                  
-                    iteration = new IterationStep(currentCar, steps, 0);
-                }
+                var remainingDelta = end - currentCar.Position;
+                var direction = remainingDelta.Angle;
+                var steps = CalcSteps(remainingDelta, direction);
 
-                iterations.Push(iteration);
-                currentCar = currentCar.Iterate(iteration.Direction);
-
-                if (currentCar.Position == end && currentCar.Speed == Point.Zero)
+                for (;;)
                 {
-                    return ExtractResults(iterations);
+                    IterationStep iteration;
+                    if (NeedToTrackBack(iterations, maxSteps,
+                        /* (currentCar.Position == end) ||  lastDirection.HasValue && lastDirection != direction)*/false))
+                    {
+                        var temp = TrackBackOneStep(iterations);
+
+                        iteration = temp.Item1;
+                        currentCar = temp.Item2;
+                    }
+                    else
+                    {
+
+                        iteration = new IterationStep(currentCar, steps, 0);
+                    }
+
+                    iterations.Push(iteration);
+                    currentCar = currentCar.Iterate(iteration.Direction);
+
+                    if (currentCar.Position == end && currentCar.Speed == Point.Zero)
+                    {
+                        allResults.Add(ExtractResults(iterations));
+                    }
                 }
             }
+            catch (NoMoreSolutions)
+            {
+                
+            }
+
+            return allResults;
         }
 
-        private static List<Point> CalcSteps(Point remainingDelta,  double direction)
+        private static IReadOnlyList<Point> CalcSteps(Point remainingDelta,  double direction)
         {
             if (remainingDelta == Point.Zero)
             {
@@ -88,14 +104,14 @@ namespace Vertrackt
             return Steps.OrderByAngle(direction).ToList();
         }
 
-        private static IEnumerable<Point> ExtractResults(Stack<IterationStep> iterations)
+        private static List<Point> ExtractResults(Stack<IterationStep> iterations)
         {
-            return iterations.Reverse().Select(item => item.Direction);
+            return iterations.Reverse().Select(item => item.Direction).ToList();
         }
 
         private static bool NeedToTrackBack(Stack<IterationStep> iterations, int maxSteps, bool condition)
         {
-            return iterations.Count > maxSteps || condition;
+            return iterations.Count >= maxSteps || condition;
         }
 
         private static Tuple<IterationStep, Car> TrackBackOneStep(Stack<IterationStep> iterations)

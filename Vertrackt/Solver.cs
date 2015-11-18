@@ -77,12 +77,12 @@ namespace Vertrackt
 
         private static IterationStep TrackBackOneStep(Stack<IterationStep> iterations, ref Car currentCar)
         {
-            var lastIteration = iterations.Pop();
-            currentCar = lastIteration.Car;
+            var currentIteration = iterations.Pop();
+            currentCar = currentIteration.Car;
 
-            if (lastIteration.CanNext)
+            if (currentIteration.CanNext)
             {
-                return lastIteration.Next();
+                return currentIteration.Next();
             }
             return TrackBackOneStep(iterations, ref currentCar);
         }

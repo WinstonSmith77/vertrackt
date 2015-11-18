@@ -71,6 +71,6 @@ namespace Vertrackt.Geometry
 
         public double Length => Math.Sqrt(X * X + Y * Y);
 
-        public static Point Zero => new Point(0,0);
+        public static Point Zero { get; } = new Point(0,0);
     }
 }

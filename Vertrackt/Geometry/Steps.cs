@@ -35,7 +35,7 @@ namespace Vertrackt.Geometry
             AllWithoutEmpty = all;
         }
 
-        public static IEnumerable<Point> OrderByAngel(double angle)
+        public static List<Point> OrderByAngle(double angle)
         {
             return _sortedForAngle.GetValueOrCreateType(angle, () =>
             {
@@ -45,7 +45,7 @@ namespace Vertrackt.Geometry
             });
         }
 
-        private static readonly Dictionary<double, IEnumerable<Point>> _sortedForAngle = new Dictionary<double, IEnumerable<Point>>();
+        private static readonly Dictionary<double, List<Point>> _sortedForAngle = new Dictionary<double, List<Point>>();
 
 
         public static IEnumerable<Point> AllWithoutEmpty { get; }

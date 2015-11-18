@@ -35,7 +35,7 @@ namespace Vertrackt.Tests.Geometry
         [TestCaseSource(nameof(AngleSortTests))]
         public void TestAngleSort(double angle)
         {
-            var steps = Steps.OrderByAngel(angle).ToList();
+            var steps = Steps.OrderByAngle(angle).ToList();
 
             var numberOfItems = steps.Count;
 

@@ -18,6 +18,12 @@ namespace Vertrackt.Tests.Geometry
             (a + b).Should().Be(result);
         }
 
+        [TestCaseSource(nameof(AddTests))]
+        public void Sub(Point a, Point b, Point result)
+        {
+            (result -b).Should().Be(a);
+        }
+
         [TestCaseSource(nameof(EqualsTests))]
         public void Equals(Point a, Point b, bool result)
         {

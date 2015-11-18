@@ -12,12 +12,10 @@ namespace Vertrackt.Tests
     [TestFixture]
     public static class SolverTest
     {
-        [Test]
-        public static void Test()
+        [TestCaseSource(nameof(TestCases))]
+        public static void Test(Point start, Point end, int steps)
         {
-            var start = new Point(0, 0);
-            var end = new Point(10, 0);
-            var results = Solver.DoIt(start, end, 4).ToList();
+            var results = Solver.DoIt(start, end, steps).ToList();
 
             results.ForEach(result =>
             {
@@ -28,5 +26,17 @@ namespace Vertrackt.Tests
             });
         }
 
+        private static IEnumerable<object> TestCases()
+        {
+            yield return new object[] {new Point(0, 0), new Point(0, 20), 4};
+            yield return new object[] {new Point(0, 0), new Point(0, 10), 4};
+
+            yield return new object[] {new Point(0, 10), new Point(0, 0), 4};
+            yield return new object[] {new Point(0, 20), new Point(0, 0), 4};
+
+            yield return new object[] {new Point(10, 10), new Point(0, 0), 4};
+        }
     }
 }
+
+

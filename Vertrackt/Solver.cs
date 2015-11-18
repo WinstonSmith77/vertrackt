@@ -92,7 +92,7 @@ namespace Vertrackt
                 
             }
 
-            return allResults;
+            return allResults.OrderBy(item => item.Count).ToList();
         }
 
         private static IReadOnlyList<Point> CalcSteps(Point remainingDelta,  double direction)

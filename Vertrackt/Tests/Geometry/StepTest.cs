@@ -32,27 +32,7 @@ namespace Vertrackt.Tests.Geometry
             delta.Should().BeApproximately(result, 1e-15);
         }
 
-        [TestCaseSource(nameof(AngleSortTests))]
-        public void TestAngleSort(double angle)
-        {
-            var steps = Steps.OrderByAngle(angle).ToList();
-
-            var numberOfItems = steps.Count;
-
-            for (int i = 0; i < numberOfItems - 2; i++)
-            {
-                var a = steps[i];
-                var b = steps[i + 1];
-                var c = steps[i + 2];
-
-                Helpers.DeltaAngle(a.Angle, angle).Should().BeLessOrEqualTo(Helpers.DeltaAngle(b.Angle, angle));
-                var aAgreaterOrEqualToB = a.LengthSqr >= b.LengthSqr;
-                var bAgreaterOrEqualToC = b.LengthSqr >= c.LengthSqr;
-
-                (aAgreaterOrEqualToB || bAgreaterOrEqualToC).Should().BeTrue();
-            }
-        }
-
+        
 
         private static IEnumerable<object> AngleDeltaTests()
         {
@@ -68,11 +48,6 @@ namespace Vertrackt.Tests.Geometry
             yield return new object[] { 2 * Math.PI / 180, 2 * Math.PI / 180, 0 * Math.PI / 180 };
         }
 
-        private static IEnumerable<object> AngleSortTests()
-        {
-            yield return new object[] { 45 * Math.PI / 180 };
-            yield return new object[] { -45 * Math.PI / 180 };
-
-        }
+      
     }
 }

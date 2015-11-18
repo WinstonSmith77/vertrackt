@@ -34,6 +34,15 @@ namespace Vertrackt.Geometry
             AllWithoutEmpty = all;
         }
 
+        public static IEnumerable<Point> OrderByAngel(double angle)
+        {
+            var result = new List<Point>(AllWithoutEmpty);
+
+            result.Sort(new PointSorter(angle));
+
+            return result;
+        }
+
         public static IEnumerable<Point> AllWithoutEmpty { get; }
 
         public static double DeltaAngle(double a, double b)

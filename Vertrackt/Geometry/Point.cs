@@ -58,5 +58,9 @@ namespace Vertrackt.Geometry
         public int X { get; }
 
         public int Y { get; }
+
+        public double Angle => Math.Atan2(Y, X);
+
+        public int LengthSqr => X * X + Y * Y;
     }
 }

@@ -16,7 +16,7 @@ namespace Vertrackt.Geometry
         {
             A = a;
             B = b;
-            Direction = ((PointD)(B - A)).Normalize();
+            Direction = (B - A).Normalize();
         }
 
         public PointD Intersection(LineD otherLine)

@@ -60,7 +60,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Geometry\Car.cs" />
+    <Compile Include="Geometry\GaussSolver.cs" />
+    <Compile Include="Geometry\LineD.cs" />
     <Compile Include="Geometry\Point.cs" />
+    <Compile Include="Geometry\PointD.cs" />
     <Compile Include="Geometry\PointSorter.cs" />
     <Compile Include="Geometry\Steps.cs" />
     <Compile Include="Helpers.cs" />
@@ -72,6 +75,7 @@
     <Compile Include="Solver\Result.cs" />
     <Compile Include="Solver\Solver.cs" />
     <Compile Include="Geometry\BoundingBox.cs" />
+    <Compile Include="Tests\Geometry\LineTest.cs" />
     <Compile Include="Tests\Geometry\StepTest.cs" />
     <Compile Include="Tests\Geometry\CarTest.cs" />
     <Compile Include="Tests\Geometry\PointTest.cs" />

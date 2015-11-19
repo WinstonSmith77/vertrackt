@@ -1,59 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using NUnit.Framework;
 using Vertrackt.Geometry;
 
-namespace Vertrackt
+namespace Vertrackt.Solver
 {
-    class IterationStep
-    {
-        public IterationStep(Car car, IReadOnlyList<Point> steps, int index)
-        {
-            Car = car;
-            Steps = steps;
-            Index = index;
-        }
-
-        public Car Car { get; }
-
-        public IReadOnlyList<Point> Steps { get; }
-
-        public int Index { get; }
-
-        public Point Direction => Steps[Index];
-
-        public override string ToString()
-        {
-            return Direction.ToString();
-        }
-
-        public IterationStep Next(Stack<IterationStep> stack)
-        {
-            var canNext = Index < Steps.Count - 1;
-            if (canNext)
-            {
-                return new IterationStep(Car, Steps, Index + 1);
-            }
-
-            if (stack.Count == 0)
-            {
-                throw new NoMoreSolutions();
-            }
-
-            return stack.Pop().Next(stack);
-        }
-    }
-
     public class Solver
     {
-        public static IReadOnlyList<IEnumerable<Point>> DoIt(Point start, Point end, int maxSteps)
+        public static IReadOnlyList<Result> DoIt(Point start, Point end, int maxSteps)
         {
-            var allResults = new List<IEnumerable<Point>>();
+            var allResults = new List<Result>();
 
-            var tasks = new List<Task<IReadOnlyList<IEnumerable<Point>>>>();
+            var tasks = new List<Task<IReadOnlyList<Result>>>();
 
             int numberOfThreads = 4;
 
@@ -69,9 +28,9 @@ namespace Vertrackt
             return allResults;
         }
 
-        private static IReadOnlyList<IEnumerable<Point>> DoItInner(Point start, Point end, int maxSteps, int numberOfThreads, int indexThread)
+        private static IReadOnlyList<Result> DoItInner(Point start, Point end, int maxSteps, int numberOfThreads, int indexThread)
         {
-            var allResults = new List<List<Point>>();
+            var allResults = new List<Result>();
             try
             {
                 var stepHelper = new Steps();
@@ -80,12 +39,14 @@ namespace Vertrackt
 
                 var iterations = new Stack<IterationStep>();
                 var currentCar = new Car(start);
+                var loops = (long) 0;
 
                 var remainingDelta = end - currentCar.Position;
                 var direction = remainingDelta.Angle;
 
                 for (;;)
                 {
+                    loops++;
                     IterationStep iteration;
                     if (NeedToTrackBack(iterations, maxSteps))
                     {
@@ -110,7 +71,7 @@ namespace Vertrackt
 
                     if (currentCar.Position == end && currentCar.Speed == Point.Zero)
                     {
-                        allResults.Add(ExtractResults(iterations));
+                        allResults.Add(ExtractResults(iterations, loops, indexThread));
                     }
                 }
             }
@@ -131,9 +92,9 @@ namespace Vertrackt
             return stepHelper.OrderByAngle(direction, includeInversed).ToList();
         }
 
-        private static List<Point> ExtractResults(Stack<IterationStep> iterations)
+        private static Result ExtractResults(Stack<IterationStep> iterations, long loops, int threadIndex)
         {
-            return iterations.Reverse().Select(item => item.Direction).ToList();
+            return new Result(iterations.Reverse().Select(item => item.Direction).ToList(), loops, threadIndex);
         }
 
         private static bool NeedToTrackBack(Stack<IterationStep> iterations, int maxSteps)

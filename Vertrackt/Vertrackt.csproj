@@ -67,7 +67,9 @@
     <Compile Include="NoMoreSolutions.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Solver.cs" />
+    <Compile Include="Solver\IterationStep.cs" />
+    <Compile Include="Solver\Result.cs" />
+    <Compile Include="Solver\Solver.cs" />
     <Compile Include="Tests\Geometry\StepTest.cs" />
     <Compile Include="Tests\Geometry\CarTest.cs" />
     <Compile Include="Tests\Geometry\PointTest.cs" />

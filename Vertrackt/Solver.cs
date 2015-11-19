@@ -47,19 +47,45 @@ namespace Vertrackt
         }
     }
 
-    public static class Solver
+    public class Solver
     {
-        public static IReadOnlyList<IReadOnlyList<Point>> DoIt(Point start, Point end, int maxSteps)
+        public static IReadOnlyList<IEnumerable<Point>> DoIt(Point start, Point end, int maxSteps)
+        {
+            var allResults = new List<IEnumerable<Point>>();
+
+            var tasks = new List<Task<IReadOnlyList<IEnumerable<Point>>>>();
+
+            int numberOfThreads = 4;
+
+            for (int i = 0; i < numberOfThreads; i++)
+            {
+                var i1 = i;
+                tasks.Add(Task.Run(() => DoItInner(start, end, maxSteps, numberOfThreads, i1)));
+            }
+
+            Task.WaitAll(tasks.ToArray());
+            allResults.AddRange(tasks.SelectMany(task => task.Result));
+
+            return allResults;
+        }
+
+        private static IReadOnlyList<IEnumerable<Point>> DoItInner(Point start, Point end, int maxSteps, int numberOfThreads, int indexThread)
         {
             var allResults = new List<List<Point>>();
             try
             {
+                var stepHelper = new Steps();
+
+                var isFirst = true;
+
                 var iterations = new Stack<IterationStep>();
                 var currentCar = new Car(start);
 
                 var remainingDelta = end - currentCar.Position;
                 var direction = remainingDelta.Angle;
-                var steps = CalcSteps(remainingDelta, direction);
+
+                var steps = CalcSteps(remainingDelta, direction, stepHelper);
+
 
                 for (;;)
                 {
@@ -74,8 +100,13 @@ namespace Vertrackt
                     }
                     else
                     {
-
-                        iteration = new IterationStep(currentCar, steps, 0);
+                        var stepsToUse = steps;
+                        if (isFirst)
+                        {
+                            stepsToUse = steps.Split(numberOfThreads).ToList()[indexThread].ToList();
+                            isFirst = false;
+                        }
+                        iteration = new IterationStep(currentCar, stepsToUse, 0);
                     }
 
                     iterations.Push(iteration);
@@ -89,19 +120,19 @@ namespace Vertrackt
             }
             catch (NoMoreSolutions)
             {
-                
             }
 
-            return allResults.OrderBy(item => item.Count).ToList();
+            return allResults;
         }
 
-        private static IReadOnlyList<Point> CalcSteps(Point remainingDelta,  double direction)
+
+        private static IReadOnlyList<Point> CalcSteps(Point remainingDelta, double direction, Steps stepHelper)
         {
             if (remainingDelta == Point.Zero)
             {
-                return new List<Point> {Point.Zero};
+                return new List<Point> { Point.Zero };
             }
-            return Steps.OrderByAngle(direction).ToList();
+            return stepHelper.OrderByAngle(direction).ToList();
         }
 
         private static List<Point> ExtractResults(Stack<IterationStep> iterations)
@@ -110,7 +141,7 @@ namespace Vertrackt
         }
 
         private static bool NeedToTrackBack(Stack<IterationStep> iterations, int maxSteps, bool condition)
-        { 
+        {
             return iterations.Count >= maxSteps || condition;
         }
 

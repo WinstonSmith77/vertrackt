@@ -7,7 +7,7 @@ using NUnit.Framework.Constraints;
 
 namespace Vertrackt.Geometry
 {
-    public static class Steps
+    public class Steps
     {
         public const int MaxAcceleation = 10;
 
@@ -35,7 +35,7 @@ namespace Vertrackt.Geometry
             AllWithoutEmpty = all;
         }
 
-        public static List<Point> OrderByAngle(double angle)
+        public List<Point> OrderByAngle(double angle)
         {
             return _sortedForAngle.GetValueOrCreateType(angle, () =>
             {
@@ -59,7 +59,7 @@ namespace Vertrackt.Geometry
             return Helpers.DeltaAngle(item.Angle, direction) < 10 * Math.PI / 180;
         }
 
-        private static readonly Dictionary<double, List<Point>> _sortedForAngle = new Dictionary<double, List<Point>>();
+        private  readonly Dictionary<double, List<Point>> _sortedForAngle = new Dictionary<double, List<Point>>();
 
 
         public static IEnumerable<Point> AllWithoutEmpty { get; }

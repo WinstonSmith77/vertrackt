@@ -8,7 +8,7 @@ namespace Vertrackt
 {
     public static class Helpers
     {
-        public static TV GetValueOrCreateType<TK,TV>(this IDictionary<TK, TV> dictionary, TK key, Func<TV> createValue )
+        public static TV GetValueOrCreateType<TK, TV>(this IDictionary<TK, TV> dictionary, TK key, Func<TV> createValue)
         {
             if (!dictionary.ContainsKey(key))
             {
@@ -24,5 +24,14 @@ namespace Vertrackt
             var delta = Math.Abs(a - b);
             return Math.Min(2 * Math.PI - delta, delta);
         }
+
+
+        public static IEnumerable<IEnumerable<T>> Split<T>(this IEnumerable<T> list, int parts)
+        {
+            return list.Select((item, index) => new { index, item })
+                       .GroupBy(x => x.index % parts)
+                       .Select(x => x.Select(y => y.item));
+        }
     }
+
 }

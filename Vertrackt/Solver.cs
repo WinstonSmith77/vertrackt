@@ -55,7 +55,7 @@ namespace Vertrackt
 
             var tasks = new List<Task<IReadOnlyList<IEnumerable<Point>>>>();
 
-            int numberOfThreads = 4;
+            int numberOfThreads = 8;
 
             for (int i = 0; i < numberOfThreads; i++)
             {
@@ -84,9 +84,6 @@ namespace Vertrackt
                 var remainingDelta = end - currentCar.Position;
                 var direction = remainingDelta.Angle;
 
-                var steps = CalcSteps(remainingDelta, direction, stepHelper);
-
-
                 for (;;)
                 {
                     IterationStep iteration;
@@ -100,10 +97,10 @@ namespace Vertrackt
                     }
                     else
                     {
-                        var stepsToUse = steps;
+                        var stepsToUse = CalcSteps(remainingDelta, direction, stepHelper, !isFirst);
                         if (isFirst)
                         {
-                            stepsToUse = steps.Split(numberOfThreads).ToList()[indexThread].ToList();
+                            stepsToUse = stepsToUse.Split(numberOfThreads).ToList()[indexThread].ToList();
                             isFirst = false;
                         }
                         iteration = new IterationStep(currentCar, stepsToUse, 0);
@@ -126,13 +123,13 @@ namespace Vertrackt
         }
 
 
-        private static IReadOnlyList<Point> CalcSteps(Point remainingDelta, double direction, Steps stepHelper)
+        private static IReadOnlyList<Point> CalcSteps(Point remainingDelta, double direction, Steps stepHelper, bool includeInversed)
         {
             if (remainingDelta == Point.Zero)
             {
                 return new List<Point> { Point.Zero };
             }
-            return stepHelper.OrderByAngle(direction).ToList();
+            return stepHelper.OrderByAngle(direction, includeInversed).ToList();
         }
 
         private static List<Point> ExtractResults(Stack<IterationStep> iterations)

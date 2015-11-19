@@ -35,9 +35,9 @@ namespace Vertrackt.Geometry
             AllWithoutEmpty = all;
         }
 
-        public List<Point> OrderByAngle(double angle)
+        public List<Point> OrderByAngle(double angle, bool includeInversed)
         {
-            return _sortedForAngle.GetValueOrCreateType(angle, () =>
+            return _sortedForAngle.GetValueOrCreateType(Tuple.Create(angle, includeInversed), () =>
             {
                 var result = new List<Point>(AllWithoutEmpty);
 
@@ -47,7 +47,10 @@ namespace Vertrackt.Geometry
                 var inverse = result.Select(item => item.Inverse).Reverse().ToList();
                
                 result.Add(Point.Zero);
-                result.AddRange(inverse);
+                if (includeInversed)
+                {
+                    result.AddRange(inverse);
+                }
 
                 return result;
             });
@@ -59,7 +62,7 @@ namespace Vertrackt.Geometry
             return Helpers.DeltaAngle(item.Angle, direction) < 10 * Math.PI / 180;
         }
 
-        private  readonly Dictionary<double, List<Point>> _sortedForAngle = new Dictionary<double, List<Point>>();
+        private  readonly Dictionary<Tuple<double, bool>, List<Point>> _sortedForAngle = new Dictionary<Tuple<double, bool>, List<Point>>();
 
 
         public static IEnumerable<Point> AllWithoutEmpty { get; }

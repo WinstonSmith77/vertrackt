@@ -11,15 +11,14 @@ namespace Vertrackt.Solver
         public static Results DoIt(Point start, Point end, int maxSteps)
         {
             var allResults = new List<Result>();
-
             var tasks = new List<Task<Results>>();
-
             int numberOfThreads = 4;
+            var boundingBox = new BoundingBox(start, end);
 
             for (int i = 0; i < numberOfThreads; i++)
             {
                 var i1 = i;
-                tasks.Add(Task.Run(() => DoItInner(start, end, maxSteps, numberOfThreads, i1)));
+                tasks.Add(Task.Run(() => DoItInner(start, end, maxSteps, numberOfThreads, i1, boundingBox)));
             }
 
             Task.WaitAll(tasks.ToArray());
@@ -29,7 +28,7 @@ namespace Vertrackt.Solver
             return new Results(allResults, allLoops);
         }
 
-        private static Results DoItInner(Point start, Point end, int maxSteps, int numberOfThreads, int threadIndex)
+        private static Results DoItInner(Point start, Point end, int maxSteps, int numberOfThreads, int threadIndex, BoundingBox bbox)
         {
             var allResults = new List<Result>();
             var loops = (long)0;
@@ -49,7 +48,7 @@ namespace Vertrackt.Solver
                 {
                     loops++;
                     IterationStep iteration;
-                    if (NeedToTrackBack(iterations, maxSteps))
+                    if (NeedToTrackBack(iterations, maxSteps, !bbox.IsInside(currentCar.Position)))
                     {
                         var temp = TrackBackOneStep(iterations);
 
@@ -98,9 +97,9 @@ namespace Vertrackt.Solver
             return new Result(iterations.Reverse().Select(item => item.Direction).ToList());
         }
 
-        private static bool NeedToTrackBack(Stack<IterationStep> iterations, int maxSteps)
+        private static bool NeedToTrackBack(Stack<IterationStep> iterations, int maxSteps, bool condition)
         {
-            return iterations.Count >= maxSteps;
+            return iterations.Count >= maxSteps || condition;
         }
 
         private static Tuple<IterationStep, Car> TrackBackOneStep(Stack<IterationStep> iterations)

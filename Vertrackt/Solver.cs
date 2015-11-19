@@ -55,7 +55,7 @@ namespace Vertrackt
 
             var tasks = new List<Task<IReadOnlyList<IEnumerable<Point>>>>();
 
-            int numberOfThreads = 8;
+            int numberOfThreads = 4;
 
             for (int i = 0; i < numberOfThreads; i++)
             {
@@ -87,8 +87,7 @@ namespace Vertrackt
                 for (;;)
                 {
                     IterationStep iteration;
-                    if (NeedToTrackBack(iterations, maxSteps,
-                        /* (currentCar.Position == end) ||  lastDirection.HasValue && lastDirection != direction)*/false))
+                    if (NeedToTrackBack(iterations, maxSteps))
                     {
                         var temp = TrackBackOneStep(iterations);
 
@@ -137,9 +136,9 @@ namespace Vertrackt
             return iterations.Reverse().Select(item => item.Direction).ToList();
         }
 
-        private static bool NeedToTrackBack(Stack<IterationStep> iterations, int maxSteps, bool condition)
+        private static bool NeedToTrackBack(Stack<IterationStep> iterations, int maxSteps)
         {
-            return iterations.Count >= maxSteps || condition;
+            return iterations.Count >= maxSteps;
         }
 
         private static Tuple<IterationStep, Car> TrackBackOneStep(Stack<IterationStep> iterations)

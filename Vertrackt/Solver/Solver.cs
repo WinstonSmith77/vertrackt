@@ -6,13 +6,13 @@ using Vertrackt.Geometry;
 
 namespace Vertrackt.Solver
 {
-    public class Solver
+    public static class Solver
     {
-        public static IReadOnlyList<Result> DoIt(Point start, Point end, int maxSteps)
+        public static Results DoIt(Point start, Point end, int maxSteps)
         {
             var allResults = new List<Result>();
 
-            var tasks = new List<Task<IReadOnlyList<Result>>>();
+            var tasks = new List<Task<Results>>();
 
             int numberOfThreads = 4;
 
@@ -23,14 +23,16 @@ namespace Vertrackt.Solver
             }
 
             Task.WaitAll(tasks.ToArray());
-            allResults.AddRange(tasks.SelectMany(task => task.Result));
+            allResults.AddRange(tasks.SelectMany(task => task.Result.Solutions));
+            var allLoops = tasks.Sum(task => task.Result.Loops);
 
-            return allResults;
+            return new Results(allResults, allLoops);
         }
 
-        private static IReadOnlyList<Result> DoItInner(Point start, Point end, int maxSteps, int numberOfThreads, int indexThread)
+        private static Results DoItInner(Point start, Point end, int maxSteps, int numberOfThreads, int threadIndex)
         {
             var allResults = new List<Result>();
+            var loops = (long)0;
             try
             {
                 var stepHelper = new Steps();
@@ -39,7 +41,6 @@ namespace Vertrackt.Solver
 
                 var iterations = new Stack<IterationStep>();
                 var currentCar = new Car(start);
-                var loops = (long) 0;
 
                 var remainingDelta = end - currentCar.Position;
                 var direction = remainingDelta.Angle;
@@ -60,7 +61,7 @@ namespace Vertrackt.Solver
                         var stepsToUse = CalcSteps(remainingDelta, direction, stepHelper, !isFirst);
                         if (isFirst)
                         {
-                            stepsToUse = stepsToUse.Split(numberOfThreads).ToList()[indexThread].ToList();
+                            stepsToUse = stepsToUse.Split(numberOfThreads).ToList()[threadIndex].ToList();
                             isFirst = false;
                         }
                         iteration = new IterationStep(currentCar, stepsToUse, 0);
@@ -71,7 +72,7 @@ namespace Vertrackt.Solver
 
                     if (currentCar.Position == end && currentCar.Speed == Point.Zero)
                     {
-                        allResults.Add(ExtractResults(iterations, loops, indexThread));
+                        allResults.Add(ExtractResults(iterations));
                     }
                 }
             }
@@ -79,7 +80,7 @@ namespace Vertrackt.Solver
             {
             }
 
-            return allResults;
+            return new Results(allResults, loops);
         }
 
 
@@ -92,9 +93,9 @@ namespace Vertrackt.Solver
             return stepHelper.OrderByAngle(direction, includeInversed).ToList();
         }
 
-        private static Result ExtractResults(Stack<IterationStep> iterations, long loops, int threadIndex)
+        private static Result ExtractResults(Stack<IterationStep> iterations)
         {
-            return new Result(iterations.Reverse().Select(item => item.Direction).ToList(), loops, threadIndex);
+            return new Result(iterations.Reverse().Select(item => item.Direction).ToList());
         }
 
         private static bool NeedToTrackBack(Stack<IterationStep> iterations, int maxSteps)

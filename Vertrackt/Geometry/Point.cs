@@ -78,6 +78,10 @@ namespace Vertrackt.Geometry
 
         private static readonly Point _zero = new Point(0, 0);
 
-        public Point Inverse => new Point(-X, -Y);
+
+        public static Point operator -(Point a)
+        {
+            return new Point(-a.X, -a.Y);
+        }
     }
 }

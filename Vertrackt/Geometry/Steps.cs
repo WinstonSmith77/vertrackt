@@ -44,7 +44,7 @@ namespace Vertrackt.Geometry
                 result = result.Where(item => FilterDirections(item, angle)).ToList();
                 result.Sort(new PointSorter(angle));
 
-                var inverse = result.Select(item => item.Inverse).Reverse().ToList();
+                var inverse = result.Select(item => -item).Reverse().ToList();
                
                 result.Add(Point.Zero);
                 if (includeInversed)

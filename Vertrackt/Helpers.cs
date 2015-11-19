@@ -32,6 +32,15 @@ namespace Vertrackt
                        .GroupBy(x => x.index % parts)
                        .Select(x => x.Select(y => y.item));
         }
+
+
+        public static void Swap<T>(ref T a, ref T b)
+        {
+            T temp = a;
+            a = b;
+            b = temp;
+        }
+
     }
 
 }

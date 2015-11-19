@@ -16,6 +16,7 @@ namespace Vertrackt.Tests
         public static void Test(Point start, Point end, int steps)
         {
             var results = Solver.DoIt(start, end, steps).ToList();
+            results.Count.Should().BeGreaterThan(0);
 
             results.ForEach(result =>
             {
@@ -35,6 +36,9 @@ namespace Vertrackt.Tests
             yield return new object[] {new Point(0, 20), new Point(0, 0), 4};
 
             yield return new object[] {new Point(10, 10), new Point(0, 0), 4};
+            yield return new object[] { new Point(15, 17), new Point(0, 0), 4 };
+
+            yield return new object[] { new Point(-15, 17), new Point(9, 3), 4 };
         }
     }
 }

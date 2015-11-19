@@ -56,7 +56,7 @@ namespace Vertrackt.Geometry
 
         private static bool FilterDirections(Point item, double direction)
         {
-            return Helpers.DeltaAngle(item.Angle, direction) < 1 * Math.PI / 180;
+            return Helpers.DeltaAngle(item.Angle, direction) < 10 * Math.PI / 180;
         }
 
         private static readonly Dictionary<double, List<Point>> _sortedForAngle = new Dictionary<double, List<Point>>();

@@ -110,7 +110,7 @@ namespace Vertrackt
         }
 
         private static bool NeedToTrackBack(Stack<IterationStep> iterations, int maxSteps, bool condition)
-        {
+        { 
             return iterations.Count >= maxSteps || condition;
         }
 

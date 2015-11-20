@@ -46,6 +46,11 @@ namespace Vertrackt
             return Math.Abs(a - b) < delta;
         }
 
+        public static T PeekCheckNull<T>(this Stack<T> stack)
+        {
+            return stack.Count > 0 ? stack.Peek() : default(T);
+        }
+
     }
 
 }

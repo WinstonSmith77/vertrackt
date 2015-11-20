@@ -76,7 +76,7 @@ namespace Vertrackt.Solver
                         var direction = remainingDelta.Angle;
                         var stepsToUse = CalcSteps(remainingDelta, direction, stepHelper, !isFirst);
                         isFirst = false;
-                        iteration = new Iteration(car, stepsToUse, 0, iterations.Count > 0 ? iterations.Peek().Car.Position : (Point?) null);
+                        iteration = new Iteration(car, stepsToUse, 0, iterations.PeekCheckNull()?.Car.Position);
                     }
 
                     iterations.Push(iteration);
@@ -86,6 +86,9 @@ namespace Vertrackt.Solver
                     {
                         result = ExtractResults(iterations);
                         maxSteps = Math.Max(1, iterations.Count - 1);
+
+                        iterations.Pop();
+                        car = iterations.Peek().Car;
                     }
                 }
             }
@@ -99,7 +102,8 @@ namespace Vertrackt.Solver
 
         private static bool WrongCarState(Stack<Iteration> iterations, Car car, Point end)
         {
-            return iterations.Count > 0 && (car.Speed == Point.Zero || (car.Position == end && car.Speed.LengthSqr > Steps.MaxAcceleationSqr));
+            return iterations.Count > 0 &&
+                   (car.Speed == Point.Zero || (car.Position == end && car.Speed.LengthSqr > Steps.MaxAcceleationSqr));
         }
 
         private static bool CheckIfTrackForCrossedOldTrack(Stack<Iteration> iterations)

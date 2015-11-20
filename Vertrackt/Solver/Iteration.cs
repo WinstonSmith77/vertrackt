@@ -3,9 +3,9 @@ using Vertrackt.Geometry;
 
 namespace Vertrackt.Solver
 {
-    class IterationStep
+    class Iteration
     {
-        public IterationStep(Car car, IReadOnlyList<Point> steps, int index)
+        public Iteration(Car car, IReadOnlyList<Point> steps, int index)
         {
             Car = car;
             Steps = steps;
@@ -25,12 +25,12 @@ namespace Vertrackt.Solver
             return Direction.ToString();
         }
 
-        public IterationStep Next(Stack<IterationStep> stack)
+        public Iteration Next(Stack<Iteration> stack)
         {
             var canNext = Index < Steps.Count - 1;
             if (canNext)
             {
-                return new IterationStep(Car, Steps, Index + 1);
+                return new Iteration(Car, Steps, Index + 1);
             }
 
             if (stack.Count == 0)

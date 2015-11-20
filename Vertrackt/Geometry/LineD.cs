@@ -104,5 +104,10 @@ namespace Vertrackt.Geometry
         {
             return new LineD(a, a + direction);
         }
+
+        public override string ToString()
+        {
+            return $"({A},{B})";
+        }
     }
 }

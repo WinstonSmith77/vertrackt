@@ -41,6 +41,11 @@ namespace Vertrackt
             b = temp;
         }
 
+        public static bool IsApproxEqual(this double a, double b, double delta = 1e-7)
+        {
+            return Math.Abs(a - b) < delta;
+        }
+
     }
 
 }

@@ -8,7 +8,7 @@ namespace Vertrackt.Geometry
 {
     public struct LineD
     {
-        public PointD A  { get; }
+        public PointD A { get; }
         public PointD B { get; }
         public PointD Direction { get; }
 
@@ -32,6 +32,49 @@ namespace Vertrackt.Geometry
             PointD result = A + Direction * (float)solution[0];
 
             return result;
+        }
+
+        public PointD? IntersectionOnBothOfTheLines(LineD otherLine)
+        {
+            var intersection = Intersection(otherLine);
+
+            if (double.IsNaN(intersection.X) || double.IsNaN(intersection.Y))
+            {
+                return null;
+            }
+
+            bool thisIsOnline = IsOnLine(intersection);
+            bool otherIsOnline = otherLine.IsOnLine(intersection);
+
+            if (thisIsOnline && otherIsOnline)
+            {
+                return intersection;
+            }
+            return null;
+        }
+
+        private bool IsOnLine(PointD intersection)
+        {
+            var distA = (intersection - A).Length;
+
+            var onA = distA.IsApproxEqual(0);
+            if (onA)
+            {
+                return false;
+            }
+
+
+            var distB = (intersection - B).Length;
+
+            var onB= distB.IsApproxEqual(0);
+            if (onB)
+            {
+                return false;
+            }
+
+
+            var length = (A - B).Length;
+            return (distA + distB).IsApproxEqual(length);
         }
 
         public double Distance(PointD point)

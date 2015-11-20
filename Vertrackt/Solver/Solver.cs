@@ -39,21 +39,27 @@ namespace Vertrackt.Solver
                 var isFirst = true;
 
                 var iterations = new Stack<Iteration>();
-                var currentCar = new Car(start);
+                var car = new Car(start);
 
-                var remainingDelta = end - currentCar.Position;
+                var remainingDelta = end - car.Position;
                 var direction = remainingDelta.Angle;
 
                 for (;;)
                 {
                     loops++;
                     Iteration iteration;
-                    if (NeedToTrackBack(iterations, maxSteps, !bbox.IsInside(currentCar.Position) || CheckTrackForCrossedOldTrack(iterations)))
+
+                    var needToTrackBack =
+                         iterations.Count >= maxSteps ||
+                         !bbox.IsInside(car.Position) ||
+                         CheckIfTrackForCrossedOldTrack(iterations);
+
+                    if (needToTrackBack)
                     {
                         var temp = TrackBackOneStep(iterations);
 
                         iteration = temp.Item1;
-                        currentCar = temp.Item2;
+                        car = temp.Item2;
                     }
                     else
                     {
@@ -63,13 +69,13 @@ namespace Vertrackt.Solver
                             stepsToUse = stepsToUse.Split(numberOfThreads).ToList()[threadIndex].ToList();
                             isFirst = false;
                         }
-                        iteration = new Iteration(currentCar, stepsToUse, 0);
+                        iteration = new Iteration(car, stepsToUse, 0);
                     }
 
                     iterations.Push(iteration);
-                    currentCar = currentCar.Iterate(iteration.Direction);
+                    car = car.Iterate(iteration.Direction);
 
-                    if (currentCar.Position == end && currentCar.Speed == Point.Zero)
+                    if (car.Position == end && car.Speed == Point.Zero)
                     {
                         allResults.Add(ExtractResults(iterations));
                     }
@@ -82,7 +88,7 @@ namespace Vertrackt.Solver
             return new Results(allResults, loops);
         }
 
-        private static bool CheckTrackForCrossedOldTrack(Stack<Iteration> iterations)
+        private static bool CheckIfTrackForCrossedOldTrack(Stack<Iteration> iterations)
         {
             var allCarPositions = iterations.Reverse().ToList().Select(iteration => iteration.Car.Position).ToList();
             if (allCarPositions.Count <= 2)
@@ -120,10 +126,7 @@ namespace Vertrackt.Solver
             return new Result(iterations.Reverse().Select(item => item.Direction).ToList());
         }
 
-        private static bool NeedToTrackBack(Stack<Iteration> iterations, int maxSteps, bool condition)
-        {
-            return iterations.Count >= maxSteps || condition;
-        }
+       
 
         private static Tuple<Iteration, Car> TrackBackOneStep(Stack<Iteration> iterations)
         {

@@ -2,16 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using NUnit.Framework.Constraints;
 using Vertrackt.Geometry;
 
 namespace Vertrackt.Solver
 {
     public static class Solver
     {
-        public static Results DoIt(Point start, Point end, int maxSteps)
+        public static Result DoIt(Point start, Point end, int maxSteps)
         {
             var allResults = new List<Result>();
-            var tasks = new List<Task<Results>>();
+            var tasks = new List<Task<Result>>();
             int numberOfThreads = 4;
             var boundingBox = new BoundingBox(start, end);
 
@@ -22,15 +23,18 @@ namespace Vertrackt.Solver
             }
 
             Task.WaitAll(tasks.ToArray());
-            allResults.AddRange(tasks.SelectMany(task => task.Result.Solutions));
+            allResults.AddRange(tasks.Select(task => task.Result));
             var allLoops = tasks.Sum(task => task.Result.Loops);
 
-            return new Results(allResults, allLoops);
+            var bestResult = allResults.OrderBy(result => result.Solution.Count()).First();
+            bestResult.Loops = allLoops;
+
+            return bestResult;
         }
 
-        private static Results DoItInner(Point start, Point end, int maxSteps, int numberOfThreads, int threadIndex, BoundingBox bbox)
+        private static Result DoItInner(Point start, Point end, int maxSteps, int numberOfThreads, int threadIndex, BoundingBox bbox)
         {
-            var allResults = new List<Result>();
+            Result result = null;
             var loops = (long)0;
             try
             {
@@ -52,6 +56,7 @@ namespace Vertrackt.Solver
                     var needToTrackBack =
                          iterations.Count >= maxSteps ||
                          !bbox.IsInside(car.Position) ||
+                         (iterations.Count > 0 && car.Speed == Point.Zero) ||
                          CheckIfTrackForCrossedOldTrack(iterations);
 
                     if (needToTrackBack)
@@ -77,7 +82,8 @@ namespace Vertrackt.Solver
 
                     if (car.Position == end && car.Speed == Point.Zero)
                     {
-                        allResults.Add(ExtractResults(iterations));
+                        result = ExtractResults(iterations);
+                        maxSteps = Math.Max(1, iterations.Count - 1);
                     }
                 }
             }
@@ -85,7 +91,8 @@ namespace Vertrackt.Solver
             {
             }
 
-            return new Results(allResults, loops);
+            result.Loops = loops;
+            return result;
         }
 
         private static bool CheckIfTrackForCrossedOldTrack(Stack<Iteration> iterations)
@@ -126,7 +133,7 @@ namespace Vertrackt.Solver
             return new Result(iterations.Reverse().Select(item => item.Direction).ToList());
         }
 
-       
+
 
         private static Tuple<Iteration, Car> TrackBackOneStep(Stack<Iteration> iterations)
         {

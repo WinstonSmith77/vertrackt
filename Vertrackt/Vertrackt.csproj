@@ -71,7 +71,6 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Solver\Iteration.cs" />
-    <Compile Include="Solver\Results.cs" />
     <Compile Include="Solver\Result.cs" />
     <Compile Include="Solver\Solver.cs" />
     <Compile Include="Geometry\BoundingBox.cs" />

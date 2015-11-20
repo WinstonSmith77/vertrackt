@@ -15,5 +15,7 @@ namespace Vertrackt.Solver
         }
 
         public IEnumerable<Point> Solution { get; }
+
+        public long Loops { get; set; }
     }
 }

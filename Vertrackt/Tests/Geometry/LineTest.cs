@@ -24,7 +24,7 @@ namespace Vertrackt.Tests.Geometry
         [TestCaseSource(nameof(IntersectionTests))]
         public static void IntersectionOnBothLines(LineD a, LineD b, PointD result)
         {
-            var intersection = a.IntersectionOnBothOfTheLines(b);
+            var intersection = a.IntersectionAndOnBothLines(b, true);
 
             intersection.HasValue.Should().BeTrue();
 
@@ -35,7 +35,7 @@ namespace Vertrackt.Tests.Geometry
         [TestCaseSource(nameof(IntersectionTestsFailOnLine))]
         public static void IntersectionOnBothLinesFail(LineD a, LineD b, PointD result)
         {
-            var intersection = a.IntersectionOnBothOfTheLines(b);
+            var intersection = a.IntersectionAndOnBothLines(b, true);
 
             intersection.HasValue.Should().BeFalse();
         }

@@ -34,7 +34,7 @@ namespace Vertrackt.Geometry
             return result;
         }
 
-        public PointD? IntersectionOnBothOfTheLines(LineD otherLine)
+        public PointD? IntersectionAndOnBothLines(LineD otherLine, bool excludeStartAndEnd)
         {
             var intersection = Intersection(otherLine);
 
@@ -43,8 +43,8 @@ namespace Vertrackt.Geometry
                 return null;
             }
 
-            bool thisIsOnline = IsOnLine(intersection);
-            bool otherIsOnline = otherLine.IsOnLine(intersection);
+            bool thisIsOnline = IsOnLine(intersection, excludeStartAndEnd);
+            bool otherIsOnline = otherLine.IsOnLine(intersection, excludeStartAndEnd);
 
             if (thisIsOnline && otherIsOnline)
             {
@@ -53,31 +53,33 @@ namespace Vertrackt.Geometry
             return null;
         }
 
-        public bool IsOnLine(PointD point)
+        private bool IsOnLine(PointD point, bool excludeStartAndEnd)
         {
             var distA = (point - A).Length;
-
-            var onA = distA.IsApproxEqual(0);
-            if (onA)
+            if (excludeStartAndEnd)
             {
-                return false;
+                var onA = distA.IsApproxEqual(0);
+                if (onA)
+                {
+                    return false;
+                }
             }
-
 
             var distB = (point - B).Length;
-
-            var onB= distB.IsApproxEqual(0);
-            if (onB)
+            if (excludeStartAndEnd)
             {
-                return false;
+                var onB = distB.IsApproxEqual(0);
+                if (onB)
+                {
+                    return false;
+                }
             }
-
 
             var length = (A - B).Length;
             return (distA + distB).IsApproxEqual(length);
         }
 
-        public double Distance(PointD point)
+        private double Distance(PointD point)
         {
             double tempX = point.X - A.X;
             double tempY = point.Y - A.Y;

@@ -117,7 +117,7 @@ namespace Vertrackt.Solver
             var currentTrack = tracks.First();
             tracks.Remove(currentTrack);
 
-            return tracks.Any(line => currentTrack.IntersectionOnBothOfTheLines(line) != null);
+            return tracks.Any(line => currentTrack.IntersectionAndOnBothLines(line, true) != null);
         }
 
 

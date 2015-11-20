@@ -87,8 +87,7 @@ namespace Vertrackt.Solver
                         result = ExtractResults(iterations);
                         maxSteps = Math.Max(1, iterations.Count - 1);
 
-                        iterations.Pop();
-                        car = iterations.Peek().Car;
+                        car = iterations.Pop().Car;
                     }
                 }
             }
@@ -128,7 +127,7 @@ namespace Vertrackt.Solver
             {
                 return new List<Point> { Point.Zero };
             }
-            return stepHelper.OrderByAngle(direction, includeInversed).ToList();
+            return stepHelper.OrderByAngle(direction, includeInversed, 5 * Math.PI / 180).ToList();
         }
 
         private static Result ExtractResults(Stack<Iteration> iterations)

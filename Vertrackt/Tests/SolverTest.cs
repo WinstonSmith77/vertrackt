@@ -28,7 +28,7 @@ namespace Vertrackt.Tests
 
         private static IEnumerable<object> TestCases()
         {
-            yield return new object[] { new Point(0, 0), new Point(0, 20), 4 };
+            yield return new object[] { new Point(0, 0), new Point(0, 20), 3 };
             yield return new object[] { new Point(0, 0), new Point(0, 10), 4 };
 
             yield return new object[] { new Point(0, 10), new Point(0, 0), 4 };
@@ -37,7 +37,7 @@ namespace Vertrackt.Tests
             yield return new object[] { new Point(10, 10), new Point(0, 0), 4 };
             yield return new object[] { new Point(15, 17), new Point(0, 0), 4 };
 
-            yield return new object[] { new Point(-15, 17), new Point(9, 3), 100 };
+            yield return new object[] { new Point(150, 0), new Point(0, 0), 9 };
         }
     }
 }

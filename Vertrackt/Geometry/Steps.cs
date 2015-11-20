@@ -10,6 +10,7 @@ namespace Vertrackt.Geometry
     public class Steps
     {
         public const int MaxAcceleation = 10;
+        public const int MaxAcceleationSqr = MaxAcceleation * MaxAcceleation;
 
         static Steps()
         {

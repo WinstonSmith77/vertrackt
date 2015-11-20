@@ -53,9 +53,9 @@ namespace Vertrackt.Geometry
             return null;
         }
 
-        private bool IsOnLine(PointD intersection)
+        private bool IsOnLine(PointD point)
         {
-            var distA = (intersection - A).Length;
+            var distA = (point - A).Length;
 
             var onA = distA.IsApproxEqual(0);
             if (onA)
@@ -64,7 +64,7 @@ namespace Vertrackt.Geometry
             }
 
 
-            var distB = (intersection - B).Length;
+            var distB = (point - B).Length;
 
             var onB= distB.IsApproxEqual(0);
             if (onB)

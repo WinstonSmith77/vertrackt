@@ -9,30 +9,36 @@ namespace Vertrackt.Solver
 {
     public static class Solver
     {
+        /*  public static Result DoIt(Point start, Point end, int maxSteps)
+          {
+              var allResults = new List<Result>();
+              var tasks = new List<Task<Result>>();
+              int numberOfThreads = 4;
+              var boundingBox = new BoundingBox(start, end);
+
+              for (int i = 0; i < numberOfThreads; i++)
+              {
+                  var i1 = i;
+                  tasks.Add(Task.Run(() => DoItInner(start, end, maxSteps, numberOfThreads, i1, boundingBox)));
+              }
+
+              Task.WaitAll(tasks.ToArray());
+              allResults.AddRange(tasks.Select(task => task.Result));
+              var allLoops = tasks.Sum(task => task.Result.Loops);
+
+              var bestResult = allResults.OrderBy(result => result.Solution.Count()).First();
+              bestResult.Loops = allLoops;
+
+              return bestResult;
+          }*/
+
         public static Result DoIt(Point start, Point end, int maxSteps)
         {
-            var allResults = new List<Result>();
-            var tasks = new List<Task<Result>>();
-            int numberOfThreads = 4;
             var boundingBox = new BoundingBox(start, end);
-
-            for (int i = 0; i < numberOfThreads; i++)
-            {
-                var i1 = i;
-                tasks.Add(Task.Run(() => DoItInner(start, end, maxSteps, numberOfThreads, i1, boundingBox)));
-            }
-
-            Task.WaitAll(tasks.ToArray());
-            allResults.AddRange(tasks.Select(task => task.Result));
-            var allLoops = tasks.Sum(task => task.Result.Loops);
-
-            var bestResult = allResults.OrderBy(result => result.Solution.Count()).First();
-            bestResult.Loops = allLoops;
-
-            return bestResult;
+            return DoIt(start, end, maxSteps, boundingBox);
         }
 
-        private static Result DoItInner(Point start, Point end, int maxSteps, int numberOfThreads, int threadIndex, BoundingBox bbox)
+        public static Result DoIt(Point start, Point end, int maxSteps, BoundingBox bbox)
         {
             Result result = null;
             var loops = (long)0;
@@ -46,7 +52,6 @@ namespace Vertrackt.Solver
                 var car = new Car(start);
 
                 var remainingDelta = end - car.Position;
-                var direction = remainingDelta.Angle;
 
                 for (;;)
                 {
@@ -56,7 +61,7 @@ namespace Vertrackt.Solver
                     var needToTrackBack =
                          iterations.Count >= maxSteps ||
                          !bbox.IsInside(car.Position) ||
-                         (iterations.Count > 0 && car.Speed == Point.Zero) ||
+                         WrongCarState(iterations, car, end) ||
                          CheckIfTrackForCrossedOldTrack(iterations);
 
                     if (needToTrackBack)
@@ -68,12 +73,9 @@ namespace Vertrackt.Solver
                     }
                     else
                     {
+                        var direction = remainingDelta.Angle;
                         var stepsToUse = CalcSteps(remainingDelta, direction, stepHelper, !isFirst);
-                        if (isFirst)
-                        {
-                            stepsToUse = stepsToUse.Split(numberOfThreads).ToList()[threadIndex].ToList();
-                            isFirst = false;
-                        }
+                        isFirst = false;
                         iteration = new Iteration(car, stepsToUse, 0);
                     }
 
@@ -93,6 +95,11 @@ namespace Vertrackt.Solver
 
             result.Loops = loops;
             return result;
+        }
+
+        private static bool WrongCarState(Stack<Iteration> iterations, Car car, Point end)
+        {
+            return iterations.Count > 0 && (car.Speed == Point.Zero || (car.Position == end && car.Speed.LengthSqr > Steps.MaxAcceleationSqr));
         }
 
         private static bool CheckIfTrackForCrossedOldTrack(Stack<Iteration> iterations)
@@ -132,8 +139,6 @@ namespace Vertrackt.Solver
         {
             return new Result(iterations.Reverse().Select(item => item.Direction).ToList());
         }
-
-
 
         private static Tuple<Iteration, Car> TrackBackOneStep(Stack<Iteration> iterations)
         {

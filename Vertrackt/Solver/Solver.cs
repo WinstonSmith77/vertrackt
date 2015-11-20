@@ -35,10 +35,15 @@ namespace Vertrackt.Solver
         public static Result DoIt(Point start, Point end, int maxSteps)
         {
             var boundingBox = new BoundingBox(start, end);
-            return DoIt(start, end, maxSteps, boundingBox);
+            return DoIt(start, end, maxSteps, boundingBox, new List<LineD>());
         }
 
-        public static Result DoIt(Point start, Point end, int maxSteps, BoundingBox bbox)
+        public static Result DoIt(Point start, Point end, int steps, IEnumerable<LineD> obstacles, IBoundingBox boundingBox)
+        {
+            return DoIt(start, end, steps, boundingBox, obstacles.ToList());
+        }
+
+        public static Result DoIt(Point start, Point end, int maxSteps, IBoundingBox bbox, List<LineD> obstacles)
         {
             Result result = null;
             var loops = (long)0;
@@ -59,10 +64,11 @@ namespace Vertrackt.Solver
                     Iteration iteration;
 
                     var needToTrackBack =
-                         iterations.Count >= maxSteps ||
-                         !bbox.IsInside(car.Position) ||
-                         WrongCarState(iterations, car, end) ||
-                         CheckIfTrackForCrossedOldTrack(iterations);
+                        iterations.Count >= maxSteps ||
+                        !bbox.IsInside(car.Position) ||
+                        WrongCarState(iterations, car, end) ||
+                        CrashWithObstacles(obstacles, iterations.PeekCheckNull()?.Line) ||
+                    CheckIfTrackForCrossedOldTrack(iterations);
 
                     if (needToTrackBack)
                     {
@@ -99,6 +105,25 @@ namespace Vertrackt.Solver
             return result;
         }
 
+
+
+        private static bool CrashWithObstacles(IEnumerable<LineD> obstacles, LineD? currentTrack)
+        {
+            if (!currentTrack.HasValue)
+            {
+                return false;
+            }
+
+            foreach (var obstacle in obstacles)
+            {
+                if (obstacle.IntersectionAndOnBothLines(currentTrack.Value, false) != null)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         private static bool WrongCarState(Stack<Iteration> iterations, Car car, Point end)
         {
             return iterations.Count > 0 &&
@@ -127,7 +152,7 @@ namespace Vertrackt.Solver
             {
                 return new List<Point> { Point.Zero };
             }
-            return stepHelper.OrderByAngle(direction, includeInversed, 5 * Math.PI / 180).ToList();
+            return stepHelper.OrderByAngle(direction, includeInversed, 20 * Math.PI / 180).ToList();
         }
 
         private static Result ExtractResults(Stack<Iteration> iterations)

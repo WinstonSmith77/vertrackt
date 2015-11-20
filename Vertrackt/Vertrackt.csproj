@@ -59,8 +59,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Geometry\AllWaysInsideBoundIngBox.cs" />
     <Compile Include="Geometry\Car.cs" />
     <Compile Include="Geometry\GaussSolver.cs" />
+    <Compile Include="Geometry\IBoundingBox.cs" />
     <Compile Include="Geometry\LineD.cs" />
     <Compile Include="Geometry\Point.cs" />
     <Compile Include="Geometry\PointD.cs" />

@@ -2,24 +2,37 @@
 
 namespace Vertrackt.Geometry
 {
-    public class BoundingBox
+    public class BoundingBox : IBoundingBox
     {
-        private readonly int left;
-        private readonly int right;
-        private readonly int bottom;
-        private readonly int top;
+        private readonly int _left;
+        private readonly int _right;
+        private readonly int _bottom;
+        private readonly int _top;
 
         public BoundingBox(Point a, Point b)
         {
-            left = Math.Min(a.X, b.X);
-            right = Math.Max(a.X, b.X);
-            bottom = Math.Min(a.Y, b.Y);
-            top = Math.Max(a.Y, b.Y);
+            _left = Math.Min(a.X, b.X);
+            _right = Math.Max(a.X, b.X);
+            _bottom = Math.Min(a.Y, b.Y);
+            _top = Math.Max(a.Y, b.Y);
+        }
+
+        private BoundingBox(int left, int right, int bottom, int top)
+        {
+            _left = left;
+            _right = right;
+            _bottom = bottom;
+            _top = top;
         }
 
         public bool IsInside(Point p)
         {
-            return p.X >= left && p.X <= right && p.Y >= bottom && p.Y <= top;
+            return p.X >= _left && p.X <= _right && p.Y >= _bottom && p.Y <= _top;
+        }
+
+        public IBoundingBox Inflate(int by)
+        {
+            return new BoundingBox(_left - by, _right + by, _bottom - by, _top + by);
         }
     }
 }

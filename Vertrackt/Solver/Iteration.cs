@@ -5,12 +5,23 @@ namespace Vertrackt.Solver
 {
     class Iteration
     {
-        public Iteration(Car car, IReadOnlyList<Point> steps, int index)
+     
+
+        public Iteration(Car car, IReadOnlyList<Point> steps, int index, Point? lastCarPosition):
+            this(car, steps, index, lastCarPosition == null ? (LineD?) null : new LineD(car.Position, lastCarPosition.Value))
+        {
+          
+        }
+
+        private Iteration(Car car, IReadOnlyList<Point> steps, int index, LineD? line)
         {
             Car = car;
             Steps = steps;
+            Line = line;
             Index = index;
         }
+
+        public LineD? Line { get; set; }
 
         public Car Car { get; }
 
@@ -30,7 +41,7 @@ namespace Vertrackt.Solver
             var canNext = Index < Steps.Count - 1;
             if (canNext)
             {
-                return new Iteration(Car, Steps, Index + 1);
+                return new Iteration(Car, Steps, Index + 1, Line);
             }
 
             if (stack.Count == 0)

@@ -76,7 +76,7 @@ namespace Vertrackt.Solver
                         var direction = remainingDelta.Angle;
                         var stepsToUse = CalcSteps(remainingDelta, direction, stepHelper, !isFirst);
                         isFirst = false;
-                        iteration = new Iteration(car, stepsToUse, 0);
+                        iteration = new Iteration(car, stepsToUse, 0, iterations.Count > 0 ? iterations.Peek().Car.Position : (Point?) null);
                     }
 
                     iterations.Push(iteration);
@@ -104,25 +104,17 @@ namespace Vertrackt.Solver
 
         private static bool CheckIfTrackForCrossedOldTrack(Stack<Iteration> iterations)
         {
-            var allCarPositions = iterations.Reverse().ToList().Select(iteration => iteration.Car.Position).ToList();
-            if (allCarPositions.Count <= 2)
+            if (iterations.Count <= 2)
             {
                 return false;
             }
 
-            var currentTrack = new LineD(allCarPositions.Last(), allCarPositions[allCarPositions.Count - 2]);
+            var tracks = iterations.ToList().Select(iteration => iteration.Line).Where(line => line.HasValue).Select(line => line.Value).ToList();
 
-            for (int i = allCarPositions.Count - 2; i >= 1; i--)
-            {
-                var oldTrack = new LineD(allCarPositions[i], allCarPositions[i - 1]);
+            var currentTrack = tracks.First();
+            tracks.Remove(currentTrack);
 
-                if (currentTrack.IntersectionOnBothOfTheLines(oldTrack) != null)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return tracks.Any(line => currentTrack.IntersectionOnBothOfTheLines(line) != null);
         }
 
 

@@ -68,7 +68,7 @@ namespace Vertrackt.Solver
                         !bbox.IsInside(car.Position) ||
                         WrongCarState(iterations, car, end) ||
                         CrashWithObstacles(obstacles, iterations.PeekCheckNull()?.Line) ||
-                    CheckIfTrackForCrossedOldTrack(iterations);
+                        CheckIfTrackForCrossedOldTrack(iterations);
 
                     if (needToTrackBack)
                     {
@@ -114,14 +114,7 @@ namespace Vertrackt.Solver
                 return false;
             }
 
-            foreach (var obstacle in obstacles)
-            {
-                if (obstacle.IntersectionAndOnBothLines(currentTrack.Value, false) != null)
-                {
-                    return true;
-                }
-            }
-            return false;
+            return obstacles.Any(obstacle => obstacle.IntersectionAndOnBothLines(currentTrack.Value, false) != null);
         }
 
         private static bool WrongCarState(Stack<Iteration> iterations, Car car, Point end)

@@ -110,7 +110,7 @@ namespace Vertrackt.Solver
                 return false;
             }
 
-            var currentTrack = currentIteration.Line.Value;
+            var currentTrack = currentIteration.Line;
             var currentPosition = currentCar.Position;
             var tracks = ExtractTracksButLast(iterations);
 
@@ -152,8 +152,7 @@ namespace Vertrackt.Solver
             var tracks =
                 iterations.ToList()
                     .Select(iteration => iteration.Line)
-                    .Where(line => line.HasValue)
-                    .Select(line => line.Value).Skip(1).ToList();
+                    .Select(line => line).Skip(1).ToList();
 
             return tracks;
         }

@@ -13,7 +13,7 @@ namespace Vertrackt.Solver
             Line = new LineD(carBefore.Position, carBefore.Iterate(Direction).Position);
         }
 
-        public LineD? Line { get; set; }
+        public LineD Line { get; set; }
 
         public Car CarBefore { get; }
 

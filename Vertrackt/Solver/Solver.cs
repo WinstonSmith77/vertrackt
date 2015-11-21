@@ -12,16 +12,15 @@ namespace Vertrackt.Solver
         public static Result DoIt(Point start, Point end, int maxSteps)
         {
             var boundingBox = new BoundingBox(start, end);
-            return DoIt(start, end, maxSteps, boundingBox, new List<LineD>(), dummy => { });
+            return DoIt(start, end, maxSteps, boundingBox, new List<LineD>(), dummy => { },(dummy, dummy2) => { });
         }
 
         public static Result DoIt(Point start, Point end, int steps, IEnumerable<LineD> obstacles, IBoundingBox boundingBox)
         {
-            return DoIt(start, end, steps, boundingBox, obstacles.ToList(), dummy => { }
-        );
+            return DoIt(start, end, steps, boundingBox, obstacles.ToList(), dummy => { }, (dummy, dummy2) => { });
         }
 
-        public static Result DoIt(Point start, Point end, int maxSteps, IBoundingBox bbox, List<LineD> obstacles, Action<Result> inmediateResult)
+        public static Result DoIt(Point start, Point end, int maxSteps, IBoundingBox bbox, List<LineD> obstacles, Action<Result> imediateResult, Action<Result, long> info)
         {
             Result result = null;
             var loops = (long)0;
@@ -69,10 +68,16 @@ namespace Vertrackt.Solver
                     if (car.Position == end && car.Speed == Point.Zero)
                     {
                         result = ExtractResults(iterations);
-                        inmediateResult(result);
+                        imediateResult(result);
                         maxSteps = Math.Max(1, iterations.Count - 1);
 
                         car = iterations.Pop().CarBefore;
+                    }
+
+                   
+                    if (loops%InfoAt == 0)
+                    {
+                        info(ExtractResults(iterations), loops);
                     }
                 }
             }
@@ -84,6 +89,7 @@ namespace Vertrackt.Solver
             return result;
         }
 
+        public const int InfoAt = 1000 * 1000;
 
 
         private static bool CrashWithObstacles(IEnumerable<LineD> obstacles, LineD? currentTrack)

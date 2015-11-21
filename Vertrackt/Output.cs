@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -17,18 +18,31 @@ namespace Vertrackt
             return result.Solution.Select(acc => acc.ToStringCt()).ToList();
         }
 
-        public static List<string> OutputCSV(this Result result, Point start)
+        public static List<string> OutputCSV(this Result result, Point start, DateTime startTime)
         {
-            var car = new Car(start);
-            var resultLines = new List<string> { car.ToString() };
-
-            foreach (var acc in result.Solution)
+            var resultLines = new List<string>
             {
-                car = car.Iterate(acc);
+                (DateTime.Now - startTime).TotalSeconds.ToString(CultureInfo.InvariantCulture),
+            };
+
+            var cars = AllCarsInSolution(result, start);
+
+            foreach (var car in cars)
+            {
                 resultLines.Add(car.ToString());
             }
 
             return resultLines;
+        }
+
+        public static List<Car> AllCarsInSolution(Result result, Point start)
+        {
+            var cars = result.Solution.Aggregate(new List<Car> {new Car(start)}, (list, acc) =>
+            {
+                list.Add(list.Last().Iterate(acc));
+                return list;
+            });
+            return cars;
         }
 
         public static string GetPathToSave(this DateTime startTime)

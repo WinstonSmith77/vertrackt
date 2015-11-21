@@ -113,39 +113,29 @@ namespace Vertrackt.Solver
             var currentTrack = currentIteration.Line;
             var currentPosition = currentCar.Position;
             var tracks = ExtractTracksButLast(iterations);
+           
+            return tracks.Any(track => FilterCheckIfTrackForCrossedOldTrack(currentTrack, track, currentPosition));
+        }
 
-            foreach (var track in tracks)
+        private static bool FilterCheckIfTrackForCrossedOldTrack(LineD currentTrack, LineD track, Point currentPosition)
+        {
+            if (currentTrack.IntersectionAndOnBothLines(track, true) != null)
             {
-                if (currentTrack.IntersectionAndOnBothLines(track, true) != null)
-                {
-                    return true;
-                }
-
-                if (track.IsOnLine(currentPosition, true))
-                {
-                    return true;
-                }
+                return true;
             }
 
-            var positions = ExtractPositionsButLast(iterations);
-            foreach (var position in positions)
+            if (track.IsOnLine(currentPosition, true))
             {
-                if (currentTrack.IsOnLine(position, true))
-                {
-                    return true;
-                }
+                return true;
+            }
+
+            if (currentTrack.IsOnLine(track.A, true))
+            {
+                return true;
             }
             return false;
         }
 
-        private static List<Point> ExtractPositionsButLast(Stack<Iteration> iterations)
-        {
-            var points =
-                iterations.ToList()
-                    .Select(iteration => iteration.CarBefore.Position).Skip(1).ToList();
-
-            return points;
-        }
 
         private static List<LineD> ExtractTracksButLast(Stack<Iteration> iterations)
         {

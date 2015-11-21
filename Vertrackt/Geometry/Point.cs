@@ -10,6 +10,11 @@ namespace Vertrackt.Geometry
     {
         public override string ToString()
         {
+            return $"{X};{Y}";
+        }
+
+        public string ToStringCt()
+        {
             return $"({X},{Y})";
         }
 

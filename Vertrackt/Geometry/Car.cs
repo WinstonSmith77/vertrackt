@@ -8,9 +8,11 @@ namespace Vertrackt.Geometry
 {
     public class Car
     {
+        public Point Acceleration { get; }
+
         public override string ToString()
         {
-            return $"(Position={Position}, Speed={Speed})";
+            return $"{Acceleration};;{Speed};;{Position}";
         }
 
         public Point Position { get; }
@@ -23,9 +25,10 @@ namespace Vertrackt.Geometry
             Speed = new Point(0, 0);
         }
 
-        private Car(Point position, Point speed)
+        private Car(Point position, Point speed, Point acceleration)
             : this(position)
         {
+            Acceleration = acceleration;
             Speed = speed;
         }
 
@@ -34,7 +37,7 @@ namespace Vertrackt.Geometry
             var newSpeed = Speed + acceleration;
             var newPosition = Position + newSpeed;
 
-            return new Car(newPosition, newSpeed);
+            return new Car(newPosition, newSpeed, acceleration);
         }
     }
 }

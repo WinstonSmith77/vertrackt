@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Vertrackt.Geometry;
+using Vertrackt.Solver;
 
 namespace Vertrackt
 {
@@ -26,13 +27,15 @@ namespace Vertrackt
             };
 
             var bb = new BoundingBox(start, end).Inflate(3);
-            var result = Solver.Solver.DoIt(start, end, steps, bb, lines.ToList());
 
-            var path = startTime.GetPathToSave();
-            File.WriteAllLines(Path.Combine(path, $"{result.Solution.Count()}ct.txt"), result.CtOutput());
-            File.WriteAllLines(Path.Combine(path, $"{result.Solution.Count()}dbg.csv"), result.OutputCSV(start));
+            Action<Result> outPutResult = result =>
+            {
+                var path = startTime.GetPathToSave();
+                File.WriteAllLines(Path.Combine(path, $"{result.Solution.Count()}ct.txt"), result.CtOutput());
+                File.WriteAllLines(Path.Combine(path, $"{result.Solution.Count()}dbg.csv"), result.OutputCSV(start));
+            };
+
+            Solver.Solver.DoIt(start, end, steps, bb, lines.ToList(), outPutResult);
         }
-
-
     }
 }

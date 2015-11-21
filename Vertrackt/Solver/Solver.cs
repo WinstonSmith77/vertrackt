@@ -35,15 +35,16 @@ namespace Vertrackt.Solver
         public static Result DoIt(Point start, Point end, int maxSteps)
         {
             var boundingBox = new BoundingBox(start, end);
-            return DoIt(start, end, maxSteps, boundingBox, new List<LineD>());
+            return DoIt(start, end, maxSteps, boundingBox, new List<LineD>(), dummy => { });
         }
 
         public static Result DoIt(Point start, Point end, int steps, IEnumerable<LineD> obstacles, IBoundingBox boundingBox)
         {
-            return DoIt(start, end, steps, boundingBox, obstacles.ToList());
+            return DoIt(start, end, steps, boundingBox, obstacles.ToList(), dummy =>{}
+        );
         }
 
-        public static Result DoIt(Point start, Point end, int maxSteps, IBoundingBox bbox, List<LineD> obstacles)
+        public static Result DoIt(Point start, Point end, int maxSteps, IBoundingBox bbox, List<LineD> obstacles, Action<Result> inmediateResult)
         {
             Result result = null;
             var loops = (long)0;
@@ -91,6 +92,7 @@ namespace Vertrackt.Solver
                     if (car.Position == end && car.Speed == Point.Zero)
                     {
                         result = ExtractResults(iterations);
+                        inmediateResult(result);
                         maxSteps = Math.Max(1, iterations.Count - 1);
 
                         car = iterations.Pop().Car;

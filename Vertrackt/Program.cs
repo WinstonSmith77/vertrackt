@@ -38,9 +38,9 @@ namespace Vertrackt
             };
 
 
-            Action<Result, long> info = (result, loops) =>
+            Action<Result> info = result =>
             {
-                Console.WriteLine(loops / Solver.Solver.InfoAt + "M Schleifen!");
+                Console.WriteLine(result.Loops / (1000 * 1000) + "M Schleifen!");
                 var allCarPos = Output.AllCarsInSolution(result, start);
                 foreach (var carPos in allCarPos)
                 {

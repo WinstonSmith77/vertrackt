@@ -12,15 +12,15 @@ namespace Vertrackt.Solver
         public static Result DoIt(Point start, Point end, int maxSteps)
         {
             var boundingBox = new BoundingBox(start, end);
-            return DoIt(start, end, maxSteps, boundingBox, new List<LineD>(), dummy => { },(dummy, dummy2) => { });
+            return DoIt(start, end, maxSteps, boundingBox, new List<LineD>(), dummy => { }, (dummy) => { });
         }
 
         public static Result DoIt(Point start, Point end, int steps, IEnumerable<LineD> obstacles, IBoundingBox boundingBox)
         {
-            return DoIt(start, end, steps, boundingBox, obstacles.ToList(), dummy => { }, (dummy, dummy2) => { });
+            return DoIt(start, end, steps, boundingBox, obstacles.ToList(), dummy => { }, (dummy) => { });
         }
 
-        public static Result DoIt(Point start, Point end, int maxSteps, IBoundingBox bbox, List<LineD> obstacles, Action<Result> imediateResult, Action<Result, long> info)
+        public static Result DoIt(Point start, Point end, int maxSteps, IBoundingBox bbox, List<LineD> obstacles, Action<Result> imediateResult, Action<Result> info)
         {
             Result result = null;
             var loops = (long)0;
@@ -74,10 +74,12 @@ namespace Vertrackt.Solver
                         car = iterations.Pop().CarBefore;
                     }
 
-                   
-                    if (loops%InfoAt == 0)
+
+                    if (loops % InfoAt == 0)
                     {
-                        info(ExtractResults(iterations), loops);
+                        var tempResult = ExtractResults(iterations);
+                        tempResult.Loops = loops;
+                        info(tempResult);
                     }
                 }
             }
@@ -89,7 +91,7 @@ namespace Vertrackt.Solver
             return result;
         }
 
-        public const int InfoAt = 1000 * 1000;
+        public const int InfoAt = 5000 * 1000;
 
 
         private static bool CrashWithObstacles(IEnumerable<LineD> obstacles, LineD? currentTrack)
@@ -119,12 +121,17 @@ namespace Vertrackt.Solver
             var currentTrack = currentIteration.Line;
             var currentPosition = currentCar.Position;
             var tracks = ExtractTracksButLast(iterations);
-           
+
             return tracks.Any(track => FilterCheckIfTrackForCrossedOldTrack(currentTrack, track, currentPosition));
         }
 
         private static bool FilterCheckIfTrackForCrossedOldTrack(LineD currentTrack, LineD track, Point currentPosition)
         {
+            if (currentPosition == track.A)
+            {
+                return true;
+            }
+
             if (currentTrack.IntersectionAndOnBothLines(track, true) != null)
             {
                 return true;
@@ -139,6 +146,7 @@ namespace Vertrackt.Solver
             {
                 return true;
             }
+
             return false;
         }
 

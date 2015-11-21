@@ -53,7 +53,7 @@ namespace Vertrackt.Geometry
             return null;
         }
 
-        private bool IsOnLine(PointD point, bool excludeStartAndEnd)
+        public bool IsOnLine(PointD point, bool excludeStartAndEnd)
         {
             var distA = (point - A).Length;
             if (excludeStartAndEnd)

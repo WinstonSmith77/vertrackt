@@ -43,7 +43,7 @@ namespace Vertrackt.Tests
         }
 
 
-        [TestCaseSource(nameof(TestCasesObstacle))]
+//        [TestCaseSource(nameof(TestCasesObstacle))]
         public static void TestObstacle(Point start, Point end, int steps, IEnumerable<LineD> obstacles, IBoundingBox bb)
         {
             var result = Solver.Solver.DoIt(start, end, steps, obstacles, bb);

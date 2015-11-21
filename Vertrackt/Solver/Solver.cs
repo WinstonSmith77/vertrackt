@@ -9,29 +9,6 @@ namespace Vertrackt.Solver
 {
     public static class Solver
     {
-        /*  public static Result DoIt(Point start, Point end, int maxSteps)
-          {
-              var allResults = new List<Result>();
-              var tasks = new List<Task<Result>>();
-              int numberOfThreads = 4;
-              var boundingBox = new BoundingBox(start, end);
-
-              for (int i = 0; i < numberOfThreads; i++)
-              {
-                  var i1 = i;
-                  tasks.Add(Task.Run(() => DoItInner(start, end, maxSteps, numberOfThreads, i1, boundingBox)));
-              }
-
-              Task.WaitAll(tasks.ToArray());
-              allResults.AddRange(tasks.Select(task => task.Result));
-              var allLoops = tasks.Sum(task => task.Result.Loops);
-
-              var bestResult = allResults.OrderBy(result => result.Solution.Count()).First();
-              bestResult.Loops = allLoops;
-
-              return bestResult;
-          }*/
-
         public static Result DoIt(Point start, Point end, int maxSteps)
         {
             var boundingBox = new BoundingBox(start, end);
@@ -40,7 +17,7 @@ namespace Vertrackt.Solver
 
         public static Result DoIt(Point start, Point end, int steps, IEnumerable<LineD> obstacles, IBoundingBox boundingBox)
         {
-            return DoIt(start, end, steps, boundingBox, obstacles.ToList(), dummy =>{}
+            return DoIt(start, end, steps, boundingBox, obstacles.ToList(), dummy => { }
         );
         }
 
@@ -59,23 +36,19 @@ namespace Vertrackt.Solver
 
                 var remainingDelta = end - car.Position;
 
+                Iteration currentIteration = null;
                 for (;;)
                 {
                     loops++;
-                    Iteration iteration;
 
                     var needToTrackBack =
-                        iterations.Count >= maxSteps ||
-                        !bbox.IsInside(car.Position) ||
-                        WrongCarState(iterations, car, end) ||
-                        CrashWithObstacles(obstacles, iterations.PeekCheckNull()?.Line) ||
-                        CheckIfTrackForCrossedOldTrack(iterations);
+                        NeedToTrackBack(end, maxSteps, bbox, obstacles, iterations, car, currentIteration);
 
                     if (needToTrackBack)
                     {
                         var temp = TrackBackOneStep(iterations);
 
-                        iteration = temp.Item1;
+                        currentIteration = temp.Item1;
                         car = temp.Item2;
                     }
                     else
@@ -83,19 +56,20 @@ namespace Vertrackt.Solver
                         var direction = remainingDelta.Angle;
                         var stepsToUse = CalcSteps(remainingDelta, direction, stepHelper, !isFirst);
                         isFirst = false;
-                        iteration = new Iteration(car, stepsToUse, 0, iterations.PeekCheckNull()?.Car.Position);
+                        currentIteration = new Iteration(car, stepsToUse, 0, iterations.PeekCheckNull()?.CarBefore.Position);
                     }
 
-                    iterations.Push(iteration);
-                    car = car.Iterate(iteration.Direction);
+                    iterations.Push(currentIteration);
+                    car = car.Iterate(currentIteration.Direction);
 
-                    if (car.Position == end && car.Speed == Point.Zero)
+                    if (car.Position == end && car.Speed == Point.Zero &&
+                         !NeedToTrackBack(end, maxSteps, bbox, obstacles, iterations, car, currentIteration))
                     {
                         result = ExtractResults(iterations);
                         inmediateResult(result);
                         maxSteps = Math.Max(1, iterations.Count - 1);
 
-                        car = iterations.Pop().Car;
+                        car = iterations.Pop().CarBefore;
                     }
                 }
             }
@@ -107,6 +81,17 @@ namespace Vertrackt.Solver
             return result;
         }
 
+        private static bool NeedToTrackBack(Point end, int maxSteps, IBoundingBox bbox, List<LineD> obstacles, Stack<Iteration> iterations,
+            Car car, Iteration currentIteration)
+        {
+            var needToTrackBack =
+                iterations.Count >= maxSteps ||
+                !bbox.IsInside(car.Position) ||
+                WrongCarState(iterations, car, end) ||
+                CrashWithObstacles(obstacles, iterations.PeekCheckNull()?.Line) ||
+                CheckIfTrackForCrossedOldTrack(iterations, currentIteration);
+            return needToTrackBack;
+        }
 
 
         private static bool CrashWithObstacles(IEnumerable<LineD> obstacles, LineD? currentTrack)
@@ -125,19 +110,60 @@ namespace Vertrackt.Solver
                    (car.Speed == Point.Zero || (car.Position == end && car.Speed.LengthSqr > Steps.MaxAcceleationSqr));
         }
 
-        private static bool CheckIfTrackForCrossedOldTrack(Stack<Iteration> iterations)
+        private static bool CheckIfTrackForCrossedOldTrack(Stack<Iteration> iterations, Iteration currentIteration)
         {
-            if (iterations.Count <= 2)
+            const int skipFirst = 2;
+            if (iterations.Count <= skipFirst)
             {
                 return false;
             }
 
-            var tracks = iterations.ToList().Select(iteration => iteration.Line).Where(line => line.HasValue).Select(line => line.Value).ToList();
+            var currentTrack = currentIteration.Line.Value;
+            var currentPosition = currentIteration.CarBefore.Position;
+            var tracks = ExtractTracksButLast(iterations);
 
-            var currentTrack = tracks.First();
-            tracks.Remove(currentTrack);
+            foreach (var track in tracks)
+            {
+                if (currentTrack.IntersectionAndOnBothLines(track, true) != null)
+                {
+                    return true;
+                }
 
-            return tracks.Any(line => currentTrack.IntersectionAndOnBothLines(line, true) != null);
+                if (track.IsOnLine(currentPosition, true))
+                {
+                    return true;
+                }
+            }
+
+            var positions = ExtractPositionsButLast(iterations);
+            foreach (var position in positions)
+            {
+                if (currentTrack.IsOnLine(position, true))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static List<Point> ExtractPositionsButLast(Stack<Iteration> iterations)
+        {
+            var points =
+                iterations.ToList()
+                    .Select(iteration => iteration.CarBefore.Position).Skip(1).ToList();
+
+            return points;
+        }
+
+        private static List<LineD> ExtractTracksButLast(Stack<Iteration> iterations)
+        {
+            var tracks =
+                iterations.ToList()
+                    .Select(iteration => iteration.Line)
+                    .Where(line => line.HasValue)
+                    .Select(line => line.Value).Skip(1).ToList();
+           
+            return tracks;
         }
 
 
@@ -158,7 +184,7 @@ namespace Vertrackt.Solver
         private static Tuple<Iteration, Car> TrackBackOneStep(Stack<Iteration> iterations)
         {
             var currentIteration = iterations.Pop().Next(iterations);
-            var currentCar = currentIteration.Car;
+            var currentCar = currentIteration.CarBefore;
 
             return Tuple.Create(currentIteration, currentCar);
         }

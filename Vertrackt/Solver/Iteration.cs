@@ -7,15 +7,15 @@ namespace Vertrackt.Solver
     {
      
 
-        public Iteration(Car car, IReadOnlyList<Point> steps, int index, Point? lastCarPosition):
-            this(car, steps, index, lastCarPosition == null ? (LineD?) null : new LineD(car.Position, lastCarPosition.Value))
+        public Iteration(Car carBefore, IReadOnlyList<Point> steps, int index, Point? lastCarPosition):
+            this(carBefore, steps, index, lastCarPosition == null ? (LineD?) null : new LineD(carBefore.Position, lastCarPosition.Value))
         {
           
         }
 
-        private Iteration(Car car, IReadOnlyList<Point> steps, int index, LineD? line)
+        private Iteration(Car carBefore, IReadOnlyList<Point> steps, int index, LineD? line)
         {
-            Car = car;
+            CarBefore = carBefore;
             Steps = steps;
             Line = line;
             Index = index;
@@ -23,7 +23,7 @@ namespace Vertrackt.Solver
 
         public LineD? Line { get; set; }
 
-        public Car Car { get; }
+        public Car CarBefore { get; }
 
         public IReadOnlyList<Point> Steps { get; }
 
@@ -41,7 +41,7 @@ namespace Vertrackt.Solver
             var canNext = Index < Steps.Count - 1;
             if (canNext)
             {
-                return new Iteration(Car, Steps, Index + 1, Line);
+                return new Iteration(CarBefore, Steps, Index + 1, Line);
             }
 
             if (stack.Count == 0)

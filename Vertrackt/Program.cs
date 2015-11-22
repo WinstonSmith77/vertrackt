@@ -60,12 +60,12 @@ namespace Vertrackt
 
         private static void cT(DateTime startTime)
         {
-            var auxEndPoint = new Point(290, 350);
+            var auxEndPoint = new Point(340, 370);
             var start = new Point(120, 180);
             var end = new Point(320, 220);
 
             end = auxEndPoint;
-            var steps = 35;
+            var steps = 40;
 
             var a = new PointD(100, 200);
             var b = new PointD(100, 100);
@@ -87,6 +87,7 @@ namespace Vertrackt
                 new LineD( new PointD(300, 300), d ),
 
                new LineD(new PointD(100, 150), new PointD(300, 150)), //extra
+               new LineD(new PointD(200, 200), new PointD(250, 200)), //extra
               };
 
 
@@ -96,7 +97,7 @@ namespace Vertrackt
             var boxesForProperEnd = new[]
             {
                 new BoundingBox(new Point(300, 200), new Point(500, 400)),
-                new BoundingBox(new Point(250, 350), new Point(500, 400)).Inflate(10)
+                new BoundingBox(new Point(250, 300), new Point(500, 400)).Inflate(10)
             };
 
 

@@ -37,7 +37,7 @@ namespace Vertrackt.Tests
             yield return new object[] { new Point(0, 20), new Point(0, 0), 4 };
 
             yield return new object[] { new Point(10, 10), new Point(0, 0), 4 };
-            yield return new object[] { new Point(14, 16), new Point(0, 0), 4 };
+            yield return new object[] { new Point(14, 16), new Point(0, 0), 7 };
 
             //  yield return new object[] { new Point(150, 0), new Point(0, 0), 9 };
         }

@@ -51,19 +51,8 @@ namespace Vertrackt.Solver
                     }
                     else
                     {
-                        var remainingDelta = end - car.Position;
                         double direction;
-
-                        if (!lastDirection.HasValue || hasSichtLinie)
-                        {
-                            direction = remainingDelta.Angle;
-                        }
-                        else
-                        {
-                            direction = lastDirection.Value;
-                        }
-                        var stepsToUse = CalcSteps(remainingDelta, direction, stepHelper, hasSichtLinie);
-                        currentIteration = new Iteration(car, stepsToUse, 0);
+                        currentIteration = NewDirection(out direction, end, car, lastDirection, hasSichtLinie, stepHelper);
 
                         lastDirection = direction;
                     }
@@ -93,6 +82,23 @@ namespace Vertrackt.Solver
 
             result.Loops = loops;
             return result;
+        }
+
+        private static Iteration NewDirection(out double direction, Point end, Car car, double? lastDirection, bool hasSichtLinie,
+            Steps stepHelper)
+        {
+            var remainingDelta = end - car.Position - car.Speed;
+
+            if (!lastDirection.HasValue || hasSichtLinie)
+            {
+                direction = remainingDelta.Angle;
+            }
+            else
+            {
+                direction = lastDirection.Value;
+            }
+            var stepsToUse = CalcSteps(remainingDelta, direction, stepHelper, hasSichtLinie);
+            return new Iteration(car, stepsToUse, 0);
         }
 
         private static bool NeedToTrackBack(Point end, int maxSteps, IBoundingBox bbox, List<LineD> obstacles, Stack<Iteration> iterations,

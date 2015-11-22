@@ -81,7 +81,7 @@ namespace Vertrackt
 
                 new LineD( new PointD(300, 300), d ),
 
-                new LineD(a, new PointD(250, 200)), //extra
+              //  new LineD(a, new PointD(250, 200)), //extra
               };
 
             var bb = new BoundingBox(new Point(0, 400), new Point(500, 0));

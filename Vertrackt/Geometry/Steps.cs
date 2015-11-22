@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -42,7 +43,7 @@ namespace Vertrackt.Geometry
         {
             return _sortedForAngle.GetValueOrCreateType(Tuple.Create(angle, angleFirst), () =>
             {
-                var result = new List<Point>(AllWithoutEmpty);
+                var result = AllWithoutEmpty.Where(point => Filter(point)).ToList();
              
                 result.Sort(new PointSorter(angle, angleFirst));
                
@@ -50,6 +51,12 @@ namespace Vertrackt.Geometry
                 
                 return result;
             });
+        }
+
+        private bool Filter(Point point)
+        {
+           return (point.X%2 == 0 && point.Y%2 == 0);
+           // return true;
         }
 
 

@@ -79,6 +79,7 @@ namespace Vertrackt.Solver
                     {
                         var tempResult = ExtractResults(iterations);
                         tempResult.Loops = loops;
+                        tempResult.Percentage = CalcPercentage(iterations);
                         info(tempResult);
                     }
                 }
@@ -88,6 +89,25 @@ namespace Vertrackt.Solver
             }
 
             result.Loops = loops;
+            return result;
+        }
+
+        private static double CalcPercentage(Stack<Iteration> iterations)
+        {
+            var data = iterations.Reverse().Select((it, index) => new { Percentage = (double)it.Index / it.Steps.Count, Total = it.Steps.Count }).ToList();
+
+            var result = (double)0;
+
+            for (int i = 0; i < data.Count; i++)
+            {
+                var partDone = data[i].Percentage;
+                for (int j = i - 1; j >= 0; j--)
+                {
+                    partDone /= data[j].Total;
+                }
+                result += partDone;
+            }
+
             return result;
         }
 

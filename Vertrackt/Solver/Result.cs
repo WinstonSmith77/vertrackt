@@ -12,10 +12,12 @@ namespace Vertrackt.Solver
         public Result(IEnumerable<Point>  solution)
         {
             Solution = solution;
+            Percentage = 1;
         }
 
         public IEnumerable<Point> Solution { get; }
 
         public long Loops { get; set; }
+        public double Percentage { get; set; }
     }
 }

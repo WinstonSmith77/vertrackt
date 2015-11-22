@@ -32,16 +32,14 @@ namespace Vertrackt.Solver
                 var car = new Car(start);
 
                 Iteration currentIteration = null;
+                double? lastDirection = null;
                 for (;;)
                 {
                     loops++;
 
-                    var needToTrackBack =
-                        iterations.Count >= maxSteps ||
-                        !bbox.IsInside(car.Position) ||
-                        WrongCarState(iterations, car, end) ||
-                        CrashWithObstacles(obstacles, iterations.PeekCheckNull()?.Line) ||
-                        CheckIfTrackForCrossedOldTrack(iterations, currentIteration, car);
+                    var hasSichtLinie = HasSichtLine(obstacles, car.Position, end);
+
+                    var needToTrackBack = NeedToTrackBack(end, maxSteps, bbox, obstacles, iterations, car, hasSichtLinie, currentIteration);
 
                     if (needToTrackBack)
                     {
@@ -49,13 +47,25 @@ namespace Vertrackt.Solver
 
                         currentIteration = temp.Item1;
                         car = temp.Item2;
+                        lastDirection = null;
                     }
                     else
                     {
                         var remainingDelta = end - car.Position;
-                        var direction = remainingDelta.Angle;
-                        var stepsToUse = CalcSteps(remainingDelta, direction, stepHelper, false);
+                        double direction;
+
+                        if (!lastDirection.HasValue || hasSichtLinie)
+                        {
+                            direction = remainingDelta.Angle;
+                        }
+                        else
+                        {
+                            direction = lastDirection.Value;
+                        }
+                        var stepsToUse = CalcSteps(remainingDelta, direction, stepHelper, hasSichtLinie);
                         currentIteration = new Iteration(car, stepsToUse, 0);
+
+                        lastDirection = direction;
                     }
 
                     iterations.Push(currentIteration);
@@ -74,14 +84,7 @@ namespace Vertrackt.Solver
                         car = iterations.Pop().CarBefore;
                     }
 
-
-                    if (loops % InfoAt == 0)
-                    {
-                        var tempResult = ExtractResults(iterations);
-                        tempResult.Loops = loops;
-                        tempResult.Percentage = CalcPercentage(iterations);
-                        info(tempResult);
-                    }
+                    OutputInfos(info, loops, iterations);
                 }
             }
             catch (NoMoreSolutions)
@@ -90,6 +93,37 @@ namespace Vertrackt.Solver
 
             result.Loops = loops;
             return result;
+        }
+
+        private static bool NeedToTrackBack(Point end, int maxSteps, IBoundingBox bbox, List<LineD> obstacles, Stack<Iteration> iterations,
+            Car car, bool hasSichtLinie, Iteration currentIteration)
+        {
+            var needToTrackBack =
+                iterations.Count >= maxSteps ||
+                !bbox.IsInside(car.Position) ||
+                WrongCarState(iterations, car, end) ||
+                !hasSichtLinie && (
+                    CrashWithObstacles(obstacles, iterations.PeekCheckNull()?.Line) ||
+                    CheckIfTrackForCrossedOldTrack(iterations, currentIteration, car));
+            return needToTrackBack;
+        }
+
+        private static void OutputInfos(Action<Result> info, long loops, Stack<Iteration> iterations)
+        {
+            if (loops%InfoAt == 0)
+            {
+                var tempResult = ExtractResults(iterations);
+                tempResult.Loops = loops;
+                tempResult.Percentage = CalcPercentage(iterations);
+                info(tempResult);
+            }
+        }
+
+        private static bool HasSichtLine(List<LineD> obstacles, Point position, Point end)
+        {
+            var line = new LineD(position, end);
+
+            return obstacles.All(obstacle => obstacle.IntersectionAndOnBothLines(line, false) == null);
         }
 
         private static double CalcPercentage(Stack<Iteration> iterations)
@@ -111,7 +145,7 @@ namespace Vertrackt.Solver
             return result;
         }
 
-        public const int InfoAt = 5000 * 1000;
+        public const int InfoAt = 500 * 1000;
 
 
         private static bool CrashWithObstacles(IEnumerable<LineD> obstacles, LineD? currentTrack)
@@ -173,13 +207,13 @@ namespace Vertrackt.Solver
         }
 
 
-        private static IReadOnlyList<Point> CalcSteps(Point remainingDelta, double direction, Steps stepHelper, bool angleFirst)
+        private static IReadOnlyList<Point> CalcSteps(Point remainingDelta, double direction, Steps stepHelper, bool sichtLinie)
         {
             if (remainingDelta == Point.Zero)
             {
                 return Steps.All;
             }
-            return stepHelper.OrderByAngle(direction, angleFirst).ToList();
+            return stepHelper.FilterByAngle(direction, sichtLinie).ToList();
         }
 
         private static Result ExtractResults(Stack<Iteration> iterations)

@@ -9,17 +9,17 @@ namespace Vertrackt.Geometry
     public class PointSorter : IComparer<Point>
     {
         private readonly double _angle;
-        private readonly bool _angleFirst;
+        private readonly bool _hasSichtLinie;
 
-        public PointSorter(double angle, bool angleFirst)
+        public PointSorter(double angle, bool hasSichtLinie)
         {
             _angle = angle;
-            _angleFirst = angleFirst;
+            _hasSichtLinie = hasSichtLinie;
         }
 
         public int Compare(Point a, Point b)
         {
-            if (_angleFirst)
+            if (_hasSichtLinie)
             {
                 var resultAngel = CompareAngle(a, b);
 

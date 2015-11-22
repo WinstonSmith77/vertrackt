@@ -39,7 +39,7 @@ namespace Vertrackt.Solver
 
                     var hasSichtLinie = HasSichtLine(obstacles, car.Position, end);
 
-                    var needToTrackBack = NeedToTrackBack(end, maxSteps, bbox, obstacles, iterations, car, hasSichtLinie, currentIteration);
+                    var needToTrackBack = NeedToTrackBack(end, maxSteps, bbox, obstacles, iterations, car, currentIteration);
 
                     if (needToTrackBack)
                     {
@@ -87,30 +87,29 @@ namespace Vertrackt.Solver
         private static Iteration NewDirection(out double direction, Point end, Car car, double? lastDirection, bool hasSichtLinie,
             Steps stepHelper)
         {
-            var remainingDelta = end - car.Position - car.Speed;
+            var accVector = end - car.Position - car.Speed;
 
             if (!lastDirection.HasValue || hasSichtLinie)
             {
-                direction = remainingDelta.Angle;
+                direction = accVector.Angle;
             }
             else
             {
                 direction = lastDirection.Value;
             }
-            var stepsToUse = CalcSteps(remainingDelta, direction, stepHelper, hasSichtLinie);
+            var stepsToUse = CalcSteps(accVector, direction, stepHelper, hasSichtLinie);
             return new Iteration(car, stepsToUse, 0);
         }
 
         private static bool NeedToTrackBack(Point end, int maxSteps, IBoundingBox bbox, List<LineD> obstacles, Stack<Iteration> iterations,
-            Car car, bool hasSichtLinie, Iteration currentIteration)
+            Car car, Iteration currentIteration)
         {
             var needToTrackBack =
                 iterations.Count >= maxSteps ||
                 !bbox.IsInside(car.Position) ||
                 WrongCarState(iterations, car, end) ||
-                !hasSichtLinie && (
-                    CrashWithObstacles(obstacles, iterations.PeekCheckNull()?.Line) ||
-                    CheckIfTrackForCrossedOldTrack(iterations, currentIteration, car));
+                CrashWithObstacles(obstacles, iterations.PeekCheckNull()?.Line) ||
+                CheckIfTrackForCrossedOldTrack(iterations, currentIteration, car);
             return needToTrackBack;
         }
 
@@ -129,7 +128,14 @@ namespace Vertrackt.Solver
         {
             var line = new LineD(position, end);
 
-            return obstacles.All(obstacle => obstacle.IntersectionAndOnBothLines(line, false) == null);
+            foreach (var obstacle in obstacles)
+            {
+                if (obstacle.IntersectionAndOnBothLines(line, false) != null)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         private static double CalcPercentage(Stack<Iteration> iterations)
@@ -161,7 +167,14 @@ namespace Vertrackt.Solver
                 return false;
             }
 
-            return obstacles.Any(obstacle => obstacle.IntersectionAndOnBothLines(currentTrack.Value, false) != null);
+            foreach (var obstacle in obstacles)
+            {
+                if (obstacle.IntersectionAndOnBothLines(currentTrack.Value, false) != null)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private static bool WrongCarState(Stack<Iteration> iterations, Car car, Point end)

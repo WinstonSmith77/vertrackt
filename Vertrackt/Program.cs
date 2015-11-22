@@ -59,7 +59,7 @@ namespace Vertrackt
         private static void cT(DateTime startTime)
         {
             var start = new Point(120, 180);
-            var end = new Point(270, 320);
+            var end = new Point(270, 340);
             var steps = 20;
 
             var a = new PointD(100, 200);
@@ -81,7 +81,7 @@ namespace Vertrackt
 
                 new LineD( new PointD(300, 300), d ),
 
-              //  new LineD(a, new PointD(250, 200)), //extra
+               new LineD(new PointD(100, 150), new PointD(300, 150)), //extra
               };
 
             var bb = new BoundingBox(new Point(0, 400), new Point(500, 0));

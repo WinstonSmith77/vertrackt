@@ -33,39 +33,35 @@ namespace Vertrackt.Geometry
                 }
             }
 
-            AllWithoutEmpty = all;
+            AllWithoutEmpty = new List<Point>(all);
+            all.Add(Point.Zero);
+            All = all;
         }
 
-        public List<Point> OrderByAngle(double angle, bool includeInversed, double tolerance)
+        public List<Point> OrderByAngle(double angle, bool angleFirst)
         {
-            return _sortedForAngle.GetValueOrCreateType(Tuple.Create(angle, includeInversed, tolerance), () =>
+            return _sortedForAngle.GetValueOrCreateType(Tuple.Create(angle, angleFirst), () =>
             {
                 var result = new List<Point>(AllWithoutEmpty);
-
-                result = result.Where(item => FilterDirections(item, angle, tolerance)).ToList();
-                result.Sort(new PointSorter(angle));
-
-                var inverse = result.Select(item => -item).Reverse().ToList();
+             
+                result.Sort(new PointSorter(angle, angleFirst));
                
                 result.Add(Point.Zero);
-                if (includeInversed)
-                {
-                    result.AddRange(inverse);
-                }
-
+                
                 return result;
             });
         }
 
 
-        private static bool FilterDirections(Point item, double direction, double tolerance)
+        /*private static bool FilterDirections(Point item, double direction, double tolerance)
         {
             return Helpers.DeltaAngle(item.Angle, direction) < tolerance;
-        }
+        }*/
 
-        private  readonly Dictionary<Tuple<double, bool, double>, List<Point>> _sortedForAngle = new Dictionary<Tuple<double, bool, double>, List<Point>>();
+        private  readonly Dictionary<Tuple<double, bool>, List<Point>> _sortedForAngle = new Dictionary<Tuple<double, bool>, List<Point>>();
 
 
-        public static IEnumerable<Point> AllWithoutEmpty { get; }
+        public static IReadOnlyList<Point> AllWithoutEmpty { get; }
+        public static IReadOnlyList<Point> All { get; }
     }
 }

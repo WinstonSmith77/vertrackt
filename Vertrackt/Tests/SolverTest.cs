@@ -69,7 +69,7 @@ namespace Vertrackt.Tests
                     new LineD(new PointD(160, 1), new PointD(-5, 1)),
                     new LineD(new PointD(10, 2), new PointD(10, -2)),
                 },
-                new BoundingBox(new Point(20, 0), new Point(0,0)).Inflate(20),
+                new BoundingBox(new Point(20, 0), new Point(0,0)).Inflate(3),
             };
 
            yield return new object[]
@@ -82,21 +82,8 @@ namespace Vertrackt.Tests
                     new LineD(new PointD(160, 1), new PointD(-5, 1)),
                     new LineD(new PointD(10, 2), new PointD(10, -2)),
                 },
-                new BoundingBox(new Point(40, 0), new Point(0,0)).Inflate(20),
+                new BoundingBox(new Point(40, 0), new Point(0,0)).Inflate(0,0, 3, 1),
            };
-
-            yield return new object[]
-          {
-                new Point(60, 0),
-                new Point(0, 0), 9,
-                new[]
-                {
-                    new LineD(new PointD(160, -5), new PointD(-5, -5)),
-                    new LineD(new PointD(160, 1), new PointD(-5, 1)),
-                    new LineD(new PointD(10, 2), new PointD(10, -2)),
-                },
-                new BoundingBox(new Point(40, 0), new Point(0,0)).Inflate(20),
-          };
         }
     }
 }

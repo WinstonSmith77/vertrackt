@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Vertrackt.Geometry
 {
-    public class AllWaysInsideBoundIngBox : IBoundingBox
+    public class AlwaysInsideBoundIngBox : IBoundingBox
     {
         public bool IsInside(Point p)
         {

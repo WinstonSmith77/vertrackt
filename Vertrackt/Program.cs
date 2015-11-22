@@ -17,7 +17,7 @@ namespace Vertrackt
         {
             var startTime = DateTime.Now;
 
-            var start = new Point(60, 0);
+            var start = new Point(80, 0);
             var end = new Point(0, 0);
             var steps = 11;
             var lines = new LineD[]
@@ -25,10 +25,12 @@ namespace Vertrackt
                 new LineD(new PointD(160, -5), new PointD(-5, -5)),
                 new LineD(new PointD(160, 1), new PointD(-5, 1)),
                 new LineD(new PointD(10, 2), new PointD(10, -2)),
-             //   new LineD(new PointD(30, 2), new PointD(30, -2))
+                new LineD(new PointD(30, -10), new PointD(30, -1)),
+                new LineD(new PointD(60, 2), new PointD(60, -2)),
+                new LineD(new PointD(50, 3), new PointD(50, -3))
             };
 
-            var bb = new BoundingBox(start, end).Inflate(3);
+            var bb = new BoundingBox(start, end).Inflate(0, 0, 5, 1);
 
             Action<Result> outPutResult = result =>
             {
@@ -44,7 +46,7 @@ namespace Vertrackt
                 var allCarPos = Output.AllCarsInSolution(result, start);
                 foreach (var carPos in allCarPos)
                 {
-                    Console.WriteLine('\t' + carPos.Position.ToString()); 
+                    Console.WriteLine('\t' + carPos.Position.ToString());
                 }
             }
             ;

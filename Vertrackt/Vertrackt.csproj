@@ -59,7 +59,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Geometry\AllWaysInsideBoundIngBox.cs" />
+    <Compile Include="Geometry\AlwaysInsideBoundIngBox.cs" />
     <Compile Include="Geometry\Car.cs" />
     <Compile Include="Geometry\GaussSolver.cs" />
     <Compile Include="Geometry\IBoundingBox.cs" />

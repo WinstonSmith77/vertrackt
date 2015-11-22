@@ -28,12 +28,8 @@ namespace Vertrackt.Solver
             {
                 var stepHelper = new Steps();
 
-                var isFirst = true;
-
                 var iterations = new Stack<Iteration>();
                 var car = new Car(start);
-
-                var remainingDelta = end - car.Position;
 
                 Iteration currentIteration = null;
                 for (;;)
@@ -56,9 +52,9 @@ namespace Vertrackt.Solver
                     }
                     else
                     {
+                        var remainingDelta = end - car.Position;
                         var direction = remainingDelta.Angle;
-                        var stepsToUse = CalcSteps(remainingDelta, direction, stepHelper, !isFirst);
-                        isFirst = false;
+                        var stepsToUse = CalcSteps(remainingDelta, direction, stepHelper, false);
                         currentIteration = new Iteration(car, stepsToUse, 0);
                     }
 
@@ -162,13 +158,13 @@ namespace Vertrackt.Solver
         }
 
 
-        private static IReadOnlyList<Point> CalcSteps(Point remainingDelta, double direction, Steps stepHelper, bool includeInversed)
+        private static IReadOnlyList<Point> CalcSteps(Point remainingDelta, double direction, Steps stepHelper, bool angleFirst)
         {
             if (remainingDelta == Point.Zero)
             {
-                return new List<Point> { Point.Zero };
+                return Steps.All;
             }
-            return stepHelper.OrderByAngle(direction, includeInversed, 20 * Math.PI / 180).ToList();
+            return stepHelper.OrderByAngle(direction, angleFirst).ToList();
         }
 
         private static Result ExtractResults(Stack<Iteration> iterations)

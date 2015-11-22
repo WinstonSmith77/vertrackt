@@ -27,7 +27,7 @@ namespace Vertrackt
         {
             var start = new Point(120, 0);
             var end = new Point(0, 0);
-            var steps = 100;
+            var steps = 35;
             var height = -2;
 
             var lines = new LineD[]
@@ -60,9 +60,12 @@ namespace Vertrackt
 
         private static void cT(DateTime startTime)
         {
+            var auxEndPoint = new Point(290, 350);
             var start = new Point(120, 180);
-            var end = new Point(270, 340);
-            var steps = 20;
+            var end = new Point(320, 220);
+
+            end = auxEndPoint;
+            var steps = 35;
 
             var a = new PointD(100, 200);
             var b = new PointD(100, 100);
@@ -86,9 +89,28 @@ namespace Vertrackt
                new LineD(new PointD(100, 150), new PointD(300, 150)), //extra
               };
 
-            var bb = new BoundingBox(new Point(0, 400), new Point(500, 0));
 
-            var desc = new Description(start, end, lines.ToList(), bb, steps);
+            var bb = new BoundingBox(Point.Zero, new Point(500, 400));
+
+
+            var boxesForProperEnd = new[]
+            {
+                new BoundingBox(new Point(300, 200), new Point(500, 400)),
+                new BoundingBox(new Point(250, 350), new Point(500, 400)).Inflate(10)
+            };
+
+
+            Func<Point, Point> auxEnd = point =>
+            {
+                if (boxesForProperEnd.Any(box => box.IsInside(point)))
+                {
+                    return end;
+                }
+
+                return auxEndPoint;
+            };
+
+            var desc = new Description(start, end, lines.ToList(), bb, steps, auxEnd);
 
             Solver.Solver.DoIt(desc, LogResult(startTime, start), LogInfo(startTime, start),
                 false);

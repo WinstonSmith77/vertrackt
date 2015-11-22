@@ -34,7 +34,7 @@ namespace Vertrackt.Solver
                 {
                     loops++;
 
-                    var hasSichtLinie = HasSichtLine(desc.Obstacles, car.Position, desc.End);
+                    var hasSichtLinie = HasSichtLine(desc.Obstacles, car.Position, desc.AuxEnd(car.Position));
 
                     var needToTrackBack = NeedToTrackBack(desc, iterations, car, currentIteration, maxSteps);
 
@@ -84,7 +84,7 @@ namespace Vertrackt.Solver
         private static Iteration NewDirection(out double direction, Description desc, Car car, double? lastDirection, bool hasSichtLinie,
             Steps stepHelper)
         {
-            var accVector = desc.End - car.Position - car.Speed;
+            var accVector = desc.AuxEnd(car.Position) - car.Position - car.Speed;
 
             if (!lastDirection.HasValue || hasSichtLinie)
             {
@@ -104,7 +104,7 @@ namespace Vertrackt.Solver
             var needToTrackBack =
                 iterations.Count >= maxSteps ||
                 !desc.BoundingBox.IsInside(car.Position) ||
-                WrongCarState(iterations, car, desc.End) ||
+                WrongCarState(iterations, car, desc) ||
                 CrashWithObstacles(desc.Obstacles, iterations.PeekCheckNull()?.Line) ||
                 CheckIfTrackForCrossedOldTrack(iterations, currentIteration, car);
             return needToTrackBack;
@@ -174,10 +174,10 @@ namespace Vertrackt.Solver
             return false;
         }
 
-        private static bool WrongCarState(Stack<Iteration> iterations, Car car, Point end)
+        private static bool WrongCarState(Stack<Iteration> iterations, Car car, Description desc)
         {
             return iterations.Count > 0 &&
-                   (car.Speed == Point.Zero || (car.Position == end && car.Speed.LengthSqr > Steps.MaxAcceleationSqr));
+                   (car.Speed == Point.Zero || (car.Position == desc.End && car.Speed.LengthSqr > Steps.MaxAcceleationSqr));
         }
 
         private static bool CheckIfTrackForCrossedOldTrack(Stack<Iteration> iterations, Iteration currentIteration, Car currentCar)

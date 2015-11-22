@@ -54,7 +54,7 @@ namespace Vertrackt.Solver
                     {
                         var remainingDelta = end - car.Position;
                         var direction = remainingDelta.Angle;
-                        var stepsToUse = CalcSteps(remainingDelta, direction, stepHelper, remainingDelta.Length < 10);
+                        var stepsToUse = CalcSteps(remainingDelta, direction, stepHelper, false);
                         currentIteration = new Iteration(car, stepsToUse, 0);
                     }
 
@@ -120,9 +120,11 @@ namespace Vertrackt.Solver
 
             var currentTrack = currentIteration.Line;
             var currentPosition = currentCar.Position;
-            var tracks = ExtractTracksButLast(iterations);
+            var result = iterations
+                   .Skip(1)
+                   .Any(it => FilterCheckIfTrackForCrossedOldTrack(currentTrack, it.Line, currentPosition));
 
-            return tracks.Any(track => FilterCheckIfTrackForCrossedOldTrack(currentTrack, track, currentPosition));
+            return result;
         }
 
         private static bool FilterCheckIfTrackForCrossedOldTrack(LineD currentTrack, LineD track, Point currentPosition)
@@ -148,17 +150,6 @@ namespace Vertrackt.Solver
             }
 
             return false;
-        }
-
-
-        private static List<LineD> ExtractTracksButLast(Stack<Iteration> iterations)
-        {
-            var tracks =
-                iterations.ToList()
-                    .Select(iteration => iteration.Line)
-                    .Select(line => line).Skip(1).ToList();
-
-            return tracks;
         }
 
 

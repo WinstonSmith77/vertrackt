@@ -56,7 +56,7 @@ namespace Vertrackt.Geometry
         private bool Filter(Point point)
         {
            return (point.X%2 == 0 && point.Y%2 == 0);
-           // return true;
+          // return true;
         }
 
 

@@ -41,7 +41,7 @@ namespace Vertrackt
                    //   new LineD(new PointD(60, -height), new PointD(80, 0)),
             };
 
-            var bb = new BoundingBox(start, end).Inflate(0, 0, Math.Abs(height) + 5, 1);
+            var bb = new BoundingBox(start, end).Inflate(0, 0, Math.Abs(height) + 2, 1);
 
             Action<Result> outPutResult = result =>
             {
@@ -55,6 +55,9 @@ namespace Vertrackt
             {
                 Console.WriteLine(result.Loops / (1000 * 1000) + "M Schleifen!");
                 Console.WriteLine((result.Percentage*100).ToString("F4") + "% erledigt");
+
+                Console.WriteLine(((DateTime.Now - startTime).TotalMinutes/result.Percentage).ToString("F4") + "Minutes to go!");
+
                 var allCarPos = Output.AllCarsInSolution(result, start);
                 foreach (var carPos in allCarPos)
                 {
@@ -63,6 +66,7 @@ namespace Vertrackt
             }
             ;
             Solver.Solver.DoIt(start, end, steps, bb, lines.ToList(), outPutResult, info, false);
+            Console.ReadKey();
         }
 
 

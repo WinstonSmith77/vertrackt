@@ -12,15 +12,15 @@ namespace Vertrackt.Solver
         public static Result DoIt(Point start, Point end, int maxSteps)
         {
             var boundingBox = new BoundingBox(start, end);
-            return DoIt(start, end, maxSteps, boundingBox, new List<LineD>(), dummy => { }, (dummy) => { });
+            return DoIt(start, end, maxSteps, boundingBox, new List<LineD>(), dummy => { }, (dummy) => { }, true);
         }
 
         public static Result DoIt(Point start, Point end, int steps, IEnumerable<LineD> obstacles, IBoundingBox boundingBox)
         {
-            return DoIt(start, end, steps, boundingBox, obstacles.ToList(), dummy => { }, (dummy) => { });
+            return DoIt(start, end, steps, boundingBox, obstacles.ToList(), dummy => { }, (dummy) => { }, true);
         }
 
-        public static Result DoIt(Point start, Point end, int maxSteps, IBoundingBox bbox, List<LineD> obstacles, Action<Result> imediateResult, Action<Result> info)
+        public static Result DoIt(Point start, Point end, int maxSteps, IBoundingBox bbox, List<LineD> obstacles, Action<Result> imediateResult, Action<Result> info, bool skipAtFirstSolution)
         {
             Result result = null;
             var loops = (long)0;
@@ -54,7 +54,7 @@ namespace Vertrackt.Solver
                     {
                         var remainingDelta = end - car.Position;
                         var direction = remainingDelta.Angle;
-                        var stepsToUse = CalcSteps(remainingDelta, direction, stepHelper, false);
+                        var stepsToUse = CalcSteps(remainingDelta, direction, stepHelper, remainingDelta.Length < 10);
                         currentIteration = new Iteration(car, stepsToUse, 0);
                     }
 
@@ -64,6 +64,10 @@ namespace Vertrackt.Solver
                     if (car.Position == end && car.Speed == Point.Zero)
                     {
                         result = ExtractResults(iterations);
+                        if (skipAtFirstSolution)
+                        {
+                            break;
+                        }
                         imediateResult(result);
                         maxSteps = Math.Max(1, iterations.Count - 1);
 

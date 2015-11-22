@@ -30,7 +30,7 @@ namespace Vertrackt
                 new LineD(new PointD(50, 3), new PointD(50, -3))
             };
 
-            var bb = new BoundingBox(start, end).Inflate(0, 0, 5, 1);
+            var bb = new BoundingBox(start, end).Inflate(0, 0, 7, 1);
 
             Action<Result> outPutResult = result =>
             {
@@ -50,7 +50,7 @@ namespace Vertrackt
                 }
             }
             ;
-            Solver.Solver.DoIt(start, end, steps, bb, lines.ToList(), outPutResult, info);
+            Solver.Solver.DoIt(start, end, steps, bb, lines.ToList(), outPutResult, info, false);
         }
 
 

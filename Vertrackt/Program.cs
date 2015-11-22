@@ -51,7 +51,9 @@ namespace Vertrackt
 
             var bb = new BoundingBox(start, end).Inflate(0, 0, Math.Abs(height) + 2, 1);
 
-            Solver.Solver.DoIt(start, end, steps, bb, lines.ToList(), LogResult(startTime, start), LogInfo(startTime, start),
+            var desc = new Description(start, end, lines.ToList(), bb, steps);
+
+            Solver.Solver.DoIt(desc, LogResult(startTime, start), LogInfo(startTime, start),
                 false);
         }
 
@@ -86,7 +88,9 @@ namespace Vertrackt
 
             var bb = new BoundingBox(new Point(0, 400), new Point(500, 0));
 
-            Solver.Solver.DoIt(start, end, steps, bb, lines.ToList(), LogResult(startTime, start), LogInfo(startTime, start),
+            var desc = new Description(start, end, lines.ToList(), bb, steps);
+
+            Solver.Solver.DoIt(desc, LogResult(startTime, start), LogInfo(startTime, start),
                 false);
         }
 

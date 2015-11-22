@@ -17,7 +17,7 @@ namespace Vertrackt.Tests
         [TestCaseSource(nameof(TestCasesSimple))]
         public static void TestSimple(Point start, Point end, int steps)
         {
-            var result = Solver.Solver.DoIt(start, end, steps);
+            var result = Solver.Solver.DoIt(new Description(start, end, steps));
 
             var shouldBeEnd = result.Solution.Aggregate(new Car(start), (car, acc) => car.Iterate(acc));
 
@@ -46,7 +46,7 @@ namespace Vertrackt.Tests
         [TestCaseSource(nameof(TestCasesObstacle))]
         public static void TestObstacle(Point start, Point end, int steps, IEnumerable<LineD> obstacles, IBoundingBox bb)
         {
-            var result = Solver.Solver.DoIt(start, end, steps, obstacles, bb);
+            var result = Solver.Solver.DoIt(new Description(start, end, obstacles.ToList(), bb, steps ));
 
             var shouldBeEnd = result.Solution.Aggregate(new Car(start), (car, acc) => car.Iterate(acc));
 

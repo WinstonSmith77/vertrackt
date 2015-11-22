@@ -9,19 +9,16 @@ namespace Vertrackt.Solver
 {
     public static class Solver
     {
-        public static Result DoIt(Point start, Point end, int maxSteps)
+       
+
+        public static Result DoIt(Description desc)
         {
-            var boundingBox = new BoundingBox(start, end);
-            return DoIt(start, end, maxSteps, boundingBox, new List<LineD>(), dummy => { }, (dummy) => { }, true);
+            return DoIt(desc, dummy => { }, (dummy) => { }, true);
         }
 
-        public static Result DoIt(Point start, Point end, int steps, IEnumerable<LineD> obstacles, IBoundingBox boundingBox)
+        public static Result DoIt(Description desc, Action<Result> imediateResult, Action<Result> info, bool skipAtFirstSolution)
         {
-            return DoIt(start, end, steps, boundingBox, obstacles.ToList(), dummy => { }, (dummy) => { }, true);
-        }
-
-        public static Result DoIt(Point start, Point end, int maxSteps, IBoundingBox bbox, List<LineD> obstacles, Action<Result> imediateResult, Action<Result> info, bool skipAtFirstSolution)
-        {
+            var maxSteps = desc.Steps;
             Result result = null;
             var loops = (long)0;
             try
@@ -29,7 +26,7 @@ namespace Vertrackt.Solver
                 var stepHelper = new Steps();
 
                 var iterations = new Stack<Iteration>();
-                var car = new Car(start);
+                var car = new Car(desc.Start);
 
                 Iteration currentIteration = null;
                 double? lastDirection = null;
@@ -37,9 +34,9 @@ namespace Vertrackt.Solver
                 {
                     loops++;
 
-                    var hasSichtLinie = HasSichtLine(obstacles, car.Position, end);
+                    var hasSichtLinie = HasSichtLine(desc.Obstacles, car.Position, desc.End);
 
-                    var needToTrackBack = NeedToTrackBack(end, maxSteps, bbox, obstacles, iterations, car, currentIteration);
+                    var needToTrackBack = NeedToTrackBack(desc, iterations, car, currentIteration, maxSteps);
 
                     if (needToTrackBack)
                     {
@@ -52,7 +49,7 @@ namespace Vertrackt.Solver
                     else
                     {
                         double direction;
-                        currentIteration = NewDirection(out direction, end, car, lastDirection, hasSichtLinie, stepHelper);
+                        currentIteration = NewDirection(out direction, desc, car, lastDirection, hasSichtLinie, stepHelper);
 
                         lastDirection = direction;
                     }
@@ -60,7 +57,7 @@ namespace Vertrackt.Solver
                     iterations.Push(currentIteration);
                     car = car.Iterate(currentIteration.Direction);
 
-                    if (car.Position == end && car.Speed == Point.Zero)
+                    if (car.Position == desc.End && car.Speed == Point.Zero)
                     {
                         result = ExtractResults(iterations);
                         if (skipAtFirstSolution)
@@ -84,10 +81,10 @@ namespace Vertrackt.Solver
             return result;
         }
 
-        private static Iteration NewDirection(out double direction, Point end, Car car, double? lastDirection, bool hasSichtLinie,
+        private static Iteration NewDirection(out double direction, Description desc, Car car, double? lastDirection, bool hasSichtLinie,
             Steps stepHelper)
         {
-            var accVector = end - car.Position - car.Speed;
+            var accVector = desc.End - car.Position - car.Speed;
 
             if (!lastDirection.HasValue || hasSichtLinie)
             {
@@ -101,14 +98,14 @@ namespace Vertrackt.Solver
             return new Iteration(car, stepsToUse, 0);
         }
 
-        private static bool NeedToTrackBack(Point end, int maxSteps, IBoundingBox bbox, List<LineD> obstacles, Stack<Iteration> iterations,
-            Car car, Iteration currentIteration)
+        private static bool NeedToTrackBack(Description desc, Stack<Iteration> iterations,
+            Car car, Iteration currentIteration, int maxSteps)
         {
             var needToTrackBack =
                 iterations.Count >= maxSteps ||
-                !bbox.IsInside(car.Position) ||
-                WrongCarState(iterations, car, end) ||
-                CrashWithObstacles(obstacles, iterations.PeekCheckNull()?.Line) ||
+                !desc.BoundingBox.IsInside(car.Position) ||
+                WrongCarState(iterations, car, desc.End) ||
+                CrashWithObstacles(desc.Obstacles, iterations.PeekCheckNull()?.Line) ||
                 CheckIfTrackForCrossedOldTrack(iterations, currentIteration, car);
             return needToTrackBack;
         }

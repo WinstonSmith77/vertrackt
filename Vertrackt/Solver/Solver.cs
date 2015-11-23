@@ -11,6 +11,7 @@ namespace Vertrackt.Solver
     {
         public static int FilterBase = 2;
         public static int ScaleDown = 10;
+        public static int MaxSteps = 10;
 
         public static Result DoIt(Description desc)
         {
@@ -35,7 +36,7 @@ namespace Vertrackt.Solver
                 {
                     loops++;
 
-                   // var hasSichtLinie = HasSichtLine(desc.Obstacles, car.Position, desc.AuxEnd(car.Position));
+                    // var hasSichtLinie = HasSichtLine(desc.Obstacles, car.Position, desc.AuxEnd(car.Position));
 
                     var needToTrackBack = NeedToTrackBack(desc, iterations, car, currentIteration, maxSteps);
 
@@ -50,7 +51,7 @@ namespace Vertrackt.Solver
                     else
                     {
                         double direction;
-                        currentIteration = NewDirection(out direction, desc, car, lastDirection, stepHelper);
+                        currentIteration = NewDirection(out direction, desc, car, lastDirection, stepHelper, iterations.Any() ? iterations.Peek().SumAcc : Point.Zero);
 
                         lastDirection = direction;
                     }
@@ -83,11 +84,11 @@ namespace Vertrackt.Solver
         }
 
         private static Iteration NewDirection(out double direction, Description desc, Car car, double? lastDirection,
-            Steps stepHelper)
+            Steps stepHelper, Point sumAcc)
         {
             var accVector = desc.AuxEnd(car.Position) - car.Position - car.Speed;
 
-            if (!lastDirection.HasValue )
+            if (!lastDirection.HasValue)
             {
                 direction = accVector.Angle;
             }
@@ -96,25 +97,33 @@ namespace Vertrackt.Solver
                 direction = lastDirection.Value;
             }
             var stepsToUse = CalcSteps(accVector, direction, stepHelper);
-            return new Iteration(car, stepsToUse, 0);
+            return new Iteration(car, stepsToUse, 0, sumAcc);
         }
 
         private static bool NeedToTrackBack(Description desc, Stack<Iteration> iterations,
             Car car, Iteration currentIteration, int maxSteps)
         {
-            var needToTrackBack =
+            var needToTrackBack = iterations.Any() &&
+                (
                 iterations.Count >= maxSteps ||
                 !desc.BoundingBox.IsInside(car.Position) ||
-                IsWrongCarState(iterations, car, desc, maxSteps) ||
+                IsAccSumInvalid(iterations.Count, currentIteration.SumAcc, maxSteps) ||
+                IsWrongCarState(iterations.Count, car, desc, maxSteps) ||
                 IsCrashWithObstacles(desc.Obstacles, iterations.PeekCheckNull()?.Line)
                 ||
-                CheckIfTrackForCrossedOldTrack(iterations, currentIteration, car);
+                CheckIfTrackForCrossedOldTrack(iterations, currentIteration, car)
+                );
             return needToTrackBack;
+        }
+
+        private static bool IsAccSumInvalid(int count, Point sumAcc, int maxSteps)
+        {
+            return false;
         }
 
         private static void OutputInfos(Action<Result> info, long loops, Stack<Iteration> iterations, int maxSteps)
         {
-            if (loops%InfoAt == 0)
+            if (loops % InfoAt == 0)
             {
                 var tempResult = ExtractResults(iterations);
                 tempResult.Loops = loops;
@@ -177,15 +186,14 @@ namespace Vertrackt.Solver
             return false;
         }
 
-        private static bool IsWrongCarState(Stack<Iteration> iterations, Car car, Description desc, int maxSteps)
+        private static bool IsWrongCarState(int iterationsCount, Car car, Description desc, int maxSteps)
         {
-            if (Car.MaxDistPossible(maxSteps - iterations.Count) < (car.Position - desc.End).Length)
+            if (Car.MaxDistPossible(maxSteps - iterationsCount) < (car.Position - desc.End).Length)
             {
                 return true;
             }
 
-            return iterations.Count > 0 &&
-                   (car.Speed == Point.Zero || (car.Position == desc.End && car.Speed.LengthSqr > Steps.MaxAcceleationSqr));
+            return car.Speed == Point.Zero || (car.Position == desc.End && car.Speed.LengthSqr > Steps.MaxAcceleationSqr);
         }
 
         private static bool CheckIfTrackForCrossedOldTrack(Stack<Iteration> iterations, Iteration currentIteration, Car currentCar)

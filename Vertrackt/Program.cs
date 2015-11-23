@@ -65,8 +65,6 @@ namespace Vertrackt
             var start = new Point(120, 180);
             var end = new Point(320, 220);
 
-            var steps = 8;
-
             var a = new PointD(100, 200);
             var b = new PointD(100, 100);
 
@@ -115,7 +113,7 @@ namespace Vertrackt
               };*/
 
             // lines = new LineD[] {};
-            var desc = new Description(start, end, lines.ToList(), bb, steps).ScaleDown(scale);
+            var desc = new Description(start, end, lines.ToList(), bb, Solver.Solver.MaxSteps).ScaleDown(scale);
 
             Solver.Solver.DoIt(desc, LogResult(startTime, start.ScaleDown(scale)), LogInfo(startTime, start.ScaleDown(scale)),
                 false);

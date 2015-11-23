@@ -5,8 +5,11 @@ namespace Vertrackt.Solver
 {
     class Iteration
     {
-        public Iteration(Car carBefore, IReadOnlyList<Point> steps, int index)
+        private readonly Point _lastSumAcc;
+
+        public Iteration(Car carBefore, IReadOnlyList<Point> steps, int index, Point lastSumAcc)
         {
+            _lastSumAcc = lastSumAcc;
             CarBefore = carBefore;
             Steps = steps;
             Index = index;
@@ -14,6 +17,8 @@ namespace Vertrackt.Solver
         }
 
         public LineD Line { get; set; }
+
+        public Point SumAcc => _lastSumAcc + Direction;
 
         public Car CarBefore { get; }
 
@@ -33,7 +38,7 @@ namespace Vertrackt.Solver
             var canNext = Index < Steps.Count - 1;
             if (canNext)
             {
-                return new Iteration(CarBefore, Steps, Index + 1);
+                return new Iteration(CarBefore, Steps, Index + 1, _lastSumAcc);
             }
 
             if (stack.Count == 0)

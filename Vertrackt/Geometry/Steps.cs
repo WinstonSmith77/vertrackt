@@ -68,7 +68,7 @@ namespace Vertrackt.Geometry
             // return true;
         }
 
-        public static int FilterBase = 2;
+        public static int FilterBase = 1;
 
 
         private static bool FilterDirections(Point item, double direction, double tolerance)

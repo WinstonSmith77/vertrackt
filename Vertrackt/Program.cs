@@ -60,7 +60,7 @@ namespace Vertrackt
 
         private static void cT(DateTime startTime)
         {
-            var scale = 5;
+            var scale = 10;
 
             var start = new Point(120, 180);
             var end = new Point(320, 220);
@@ -86,8 +86,8 @@ namespace Vertrackt
 
                 new LineD( new PointD(300, 300), d ),
 
-                new LineD(new PointD(100, 150), new PointD(300, 150)), //extra
-             //  new LineD(new PointD(200, 200), new PointD(250, 200)), //extra
+                new LineD(new PointD(0, 150), new PointD(500, 150)), //extra
+              //  new LineD(new PointD(200, 200), new PointD(250, 200)), //extra
               };
 
 
@@ -111,9 +111,10 @@ namespace Vertrackt
                 return auxEndPoint;
             };*/
 
+           // lines = new LineD[] {};
             var desc = new Description(start, end, lines.ToList(), bb, steps).ScaleDown(scale);
 
-            Solver.Solver.DoIt(desc, LogResult(startTime, start.ScaleDown(5)), LogInfo(startTime, start.ScaleDown(scale)),
+            Solver.Solver.DoIt(desc, LogResult(startTime, start.ScaleDown(scale)), LogInfo(startTime, start.ScaleDown(scale)),
                 false);
         }
 

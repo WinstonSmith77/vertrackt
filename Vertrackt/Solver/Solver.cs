@@ -9,8 +9,6 @@ namespace Vertrackt.Solver
 {
     public static class Solver
     {
-       
-
         public static Result DoIt(Description desc)
         {
             return DoIt(desc, dummy => { }, (dummy) => { }, true);
@@ -105,7 +103,8 @@ namespace Vertrackt.Solver
                 iterations.Count >= maxSteps ||
                 !desc.BoundingBox.IsInside(car.Position) ||
                 IsWrongCarState(iterations, car, desc, maxSteps) ||
-                IsCrashWithObstacles(desc.Obstacles, iterations.PeekCheckNull()?.Line)/* ||
+                IsCrashWithObstacles(desc.Obstacles, iterations.PeekCheckNull()?.Line)
+               /* ||
                 CheckIfTrackForCrossedOldTrack(iterations, currentIteration, car)*/;
             return needToTrackBack;
         }

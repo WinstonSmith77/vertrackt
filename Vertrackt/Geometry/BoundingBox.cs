@@ -35,9 +35,14 @@ namespace Vertrackt.Geometry
             return Inflate(by, by, by, by);
         }
 
-        public IBoundingBox Inflate(int byLeft, int byRight, int byBottom,  int byTop)
+        public IBoundingBox Inflate(int byLeft, int byRight, int byBottom, int byTop)
         {
             return new BoundingBox(_left - byLeft, _right + byRight, _bottom - byBottom, _top + byTop);
+        }
+
+        public IBoundingBox ScaleDown(int scale)
+        {
+            return new BoundingBox(_left / scale, _right / scale, _bottom / scale, _top / scale);
         }
     }
 }

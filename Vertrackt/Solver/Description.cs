@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,7 +8,7 @@ using Vertrackt.Geometry;
 
 namespace Vertrackt.Solver
 {
-    public class Description
+    public class Description : IScaleDown<Description>
     {
         public Point Start { get; }
         public Point End { get; private set; }
@@ -46,5 +47,15 @@ namespace Vertrackt.Solver
         }
 
 
+        public Description ScaleDown(int scale)
+        {
+           return new Description(
+               Start.ScaleDown(scale),
+               End.ScaleDown(scale),  
+               Obstacles.Select(ob => ob.ScaleDown(scale)).ToList(),
+               BoundingBox.ScaleDown(scale), 
+               Steps,
+               AuxEnd);
+        }
     }
 }

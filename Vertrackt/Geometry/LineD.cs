@@ -6,8 +6,14 @@ using System.Threading.Tasks;
 
 namespace Vertrackt.Geometry
 {
-    public struct LineD
+    public struct LineD : IScaleDown<LineD>
     {
+
+        public LineD ScaleDown(int scale)
+        {
+            return new LineD(A.ScaleDown(scale), B.ScaleDown(scale));
+        }
+
         public PointD A { get; }
         public PointD B { get; }
         public PointD Direction { get; }

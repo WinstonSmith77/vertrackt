@@ -1,13 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Vertrackt.Geometry
 {
-    public struct Point
+    public struct Point : IScaleDown<Point>
     {
+        public Point ScaleDown(int scale)
+        {
+            return new Point(X / scale, Y / scale);
+        }
+
         public override string ToString()
         {
             return $"{X};{Y}";
@@ -42,6 +48,8 @@ namespace Vertrackt.Geometry
         {
             X = x;
             Y = y;
+            LengthSqr = x * x + y * y;
+            Length = Math.Sqrt(LengthSqr);
         }
 
         public static Point operator +(Point a, Point b)
@@ -72,9 +80,15 @@ namespace Vertrackt.Geometry
 
         public double Angle => Math.Atan2(Y, X);
 
-        public int LengthSqr => X * X + Y * Y;
+        public int LengthSqr
+        {
+            get; set;
+        }
 
-        public double Length => Math.Sqrt(X * X + Y * Y);
+        public double Length
+        {
+            get; set;
+        }
 
         public static Point Zero
         {

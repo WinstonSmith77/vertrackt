@@ -1,6 +1,6 @@
 namespace Vertrackt.Geometry
 {
-    public interface IBoundingBox
+    public interface IBoundingBox : IScaleDown<IBoundingBox>
     {
         bool IsInside(Point p);
     }

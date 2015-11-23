@@ -39,22 +39,22 @@ namespace Vertrackt.Geometry
             All = all;
         }
 
-        public List<Point> FilterByAngle(double angle, bool hasSichtLinie)
+        public List<Point> FilterByAngle(double angle)
         {
-            return _sortedForAngle.GetValueOrCreateType(Tuple.Create(angle, hasSichtLinie), () =>
+            return _sortedForAngle.GetValueOrCreateType(Tuple.Create(angle), () =>
             {
                 var result = AllWithoutEmpty.Where(point =>  Filter(point)).ToList();
 
-                result.Sort(new PointSorter(angle, hasSichtLinie));
+                result.Sort(new PointSorter(angle));
 
-                if (hasSichtLinie)
+               /* if (hasSichtLinie)
                 {
                     var filtered = result.Where(point => FilterDirections(point, angle, 5 * Math.PI / 180));
                     var inverted = filtered.Reverse().Select(item => -item);
 
                     result = filtered.ToList();
                     result.AddRange(inverted);
-                }
+                }*/
 
                 result.Add(Point.Zero);
 
@@ -64,9 +64,11 @@ namespace Vertrackt.Geometry
 
         private bool Filter(Point point)
         {
-            return (point.X % 2 == 0 && point.Y % 2 == 0);
+            return (point.X % FilterBase == 0 && point.Y % FilterBase == 0);
             // return true;
         }
+
+        public static int FilterBase = 2;
 
 
         private static bool FilterDirections(Point item, double direction, double tolerance)
@@ -74,7 +76,7 @@ namespace Vertrackt.Geometry
             return Helpers.DeltaAngle(item.Angle, direction) < tolerance;
         }
 
-        private readonly Dictionary<Tuple<double, bool>, List<Point>> _sortedForAngle = new Dictionary<Tuple<double, bool>, List<Point>>();
+        private readonly Dictionary<Tuple<double>, List<Point>> _sortedForAngle = new Dictionary<Tuple<double>, List<Point>>();
 
 
         public static IReadOnlyList<Point> AllWithoutEmpty { get; }

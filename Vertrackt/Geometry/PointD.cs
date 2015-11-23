@@ -6,8 +6,13 @@ using System.Threading.Tasks;
 
 namespace Vertrackt.Geometry
 {
-    public struct PointD
+    public struct PointD : IScaleDown<PointD>
     {
+        public PointD ScaleDown(int scale)
+        {
+           return new PointD(X / scale, Y /scale);
+        }
+
         public override string ToString()
         {
             return $"({X},{Y})";

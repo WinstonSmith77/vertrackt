@@ -60,12 +60,12 @@ namespace Vertrackt
 
         private static void cT(DateTime startTime)
         {
-            var auxEndPoint = new Point(340, 370);
+            var scale = 5;
+
             var start = new Point(120, 180);
             var end = new Point(320, 220);
 
-            end = auxEndPoint;
-            var steps = 40;
+            var steps = 10;
 
             var a = new PointD(100, 200);
             var b = new PointD(100, 100);
@@ -86,15 +86,15 @@ namespace Vertrackt
 
                 new LineD( new PointD(300, 300), d ),
 
-               new LineD(new PointD(100, 150), new PointD(300, 150)), //extra
-               new LineD(new PointD(200, 200), new PointD(250, 200)), //extra
+                new LineD(new PointD(100, 150), new PointD(300, 150)), //extra
+             //  new LineD(new PointD(200, 200), new PointD(250, 200)), //extra
               };
 
 
             var bb = new BoundingBox(Point.Zero, new Point(500, 400));
 
 
-            var boxesForProperEnd = new[]
+          /*  var boxesForProperEnd = new[]
             {
                 new BoundingBox(new Point(300, 200), new Point(500, 400)),
                 new BoundingBox(new Point(250, 300), new Point(500, 400)).Inflate(10)
@@ -109,11 +109,11 @@ namespace Vertrackt
                 }
 
                 return auxEndPoint;
-            };
+            };*/
 
-            var desc = new Description(start, end, lines.ToList(), bb, steps, auxEnd);
+            var desc = new Description(start, end, lines.ToList(), bb, steps).ScaleDown(scale);
 
-            Solver.Solver.DoIt(desc, LogResult(startTime, start), LogInfo(startTime, start),
+            Solver.Solver.DoIt(desc, LogResult(startTime, start.ScaleDown(5)), LogInfo(startTime, start.ScaleDown(scale)),
                 false);
         }
 
@@ -133,9 +133,9 @@ namespace Vertrackt
             Action<Result> info = result =>
             {
                 Console.WriteLine(result.Loops / (1000 * 1000) + "M Schleifen!");
-                Console.WriteLine((result.Percentage * 100).ToString("F4") + "% erledigt");
+                Console.WriteLine((result.Percentage * 100).ToString("F8") + "% erledigt");
 
-                Console.WriteLine(((DateTime.Now - startTime).TotalMinutes / result.Percentage).ToString("F4") + "Minutes to go!");
+                Console.WriteLine(((DateTime.Now - startTime).TotalMinutes / result.Percentage).ToString("F1") + "Minutes to go!");
 
                 var allCarPos = Output.AllCarsInSolution(result, start);
                 foreach (var carPos in allCarPos)

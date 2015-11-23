@@ -104,8 +104,8 @@ namespace Vertrackt.Solver
                 !desc.BoundingBox.IsInside(car.Position) ||
                 IsWrongCarState(iterations, car, desc, maxSteps) ||
                 IsCrashWithObstacles(desc.Obstacles, iterations.PeekCheckNull()?.Line)
-               /* ||
-                CheckIfTrackForCrossedOldTrack(iterations, currentIteration, car)*/;
+                ||
+                CheckIfTrackForCrossedOldTrack(iterations, currentIteration, car);
             return needToTrackBack;
         }
 

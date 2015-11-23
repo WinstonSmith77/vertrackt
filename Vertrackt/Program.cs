@@ -92,7 +92,7 @@ namespace Vertrackt
               };
 
 
-            var bb = new BoundingBox(new Point(100, 121), new Point(400, 350));
+            var bb = new BoundingBox(new Point(start.X - 1, start.Y -1), new Point(end.X + 1, 350));
 
 
             /*  var boxesForProperEnd = new[]

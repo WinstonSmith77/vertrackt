@@ -19,7 +19,7 @@ namespace Vertrackt
 
             // Test(startTime);
             cT(startTime);
-            Console.WriteLine("Fertsch!");
+            Console.WriteLine("Fertsch! " + (DateTime.Now - startTime).TotalSeconds + " Sekunden");
             Console.ReadKey();
         }
 
@@ -65,7 +65,7 @@ namespace Vertrackt
             var start = new Point(120, 180);
             var end = new Point(320, 220);
 
-            var steps = 10;
+            var steps = 14;
 
             var a = new PointD(100, 200);
             var b = new PointD(100, 100);
@@ -75,43 +75,44 @@ namespace Vertrackt
 
             var lines = new LineD[]
             {
-                new LineD(new PointD(250, 300), new PointD(250, 200) ),
+                new LineD(new PointD(250, 300), new PointD(250, 150) ),
 
                 new LineD(a, new PointD(200, 200) ),
-                new LineD(b, new PointD(200, 100) ),
-                new LineD(a, b ),
+               // new LineD(b, new PointD(200, 100) ),
+               // new LineD(a, b ),
 
                 new LineD(c, new PointD(400, 200) ),
-                new LineD(d, new PointD(400, 100) ),
+               // new LineD(d, new PointD(400, 100) ),
 
                 new LineD( new PointD(300, 300), d ),
 
-                new LineD(new PointD(0, 150), new PointD(500, 150)), //extra
-              //  new LineD(new PointD(200, 200), new PointD(250, 200)), //extra
+               // new LineD(new PointD(0, 150), new PointD(500, 150)), //extra
+               // new LineD(new PointD(200, 100), new PointD(250, 200)), //extra
+                new LineD(new PointD(250, 300), new PointD(300, 200) ),
               };
 
 
-            var bb = new BoundingBox(Point.Zero, new Point(500, 400));
+            var bb = new BoundingBox(new Point(100, 121), new Point(400, 350));
 
 
-          /*  var boxesForProperEnd = new[]
-            {
-                new BoundingBox(new Point(300, 200), new Point(500, 400)),
-                new BoundingBox(new Point(250, 300), new Point(500, 400)).Inflate(10)
-            };
+            /*  var boxesForProperEnd = new[]
+              {
+                  new BoundingBox(new Point(300, 200), new Point(500, 400)),
+                  new BoundingBox(new Point(250, 300), new Point(500, 400)).Inflate(10)
+              };
 
 
-            Func<Point, Point> auxEnd = point =>
-            {
-                if (boxesForProperEnd.Any(box => box.IsInside(point)))
-                {
-                    return end;
-                }
+              Func<Point, Point> auxEnd = point =>
+              {
+                  if (boxesForProperEnd.Any(box => box.IsInside(point)))
+                  {
+                      return end;
+                  }
 
-                return auxEndPoint;
-            };*/
+                  return auxEndPoint;
+              };*/
 
-           // lines = new LineD[] {};
+            // lines = new LineD[] {};
             var desc = new Description(start, end, lines.ToList(), bb, steps).ScaleDown(scale);
 
             Solver.Solver.DoIt(desc, LogResult(startTime, start.ScaleDown(scale)), LogInfo(startTime, start.ScaleDown(scale)),

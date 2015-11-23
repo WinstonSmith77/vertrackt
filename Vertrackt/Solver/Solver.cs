@@ -9,6 +9,9 @@ namespace Vertrackt.Solver
 {
     public static class Solver
     {
+        public static int FilterBase = 2;
+        public static int ScaleDown = 10;
+
         public static Result DoIt(Description desc)
         {
             return DoIt(desc, dummy => { }, (dummy) => { }, true);

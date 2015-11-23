@@ -64,11 +64,10 @@ namespace Vertrackt.Geometry
 
         private bool Filter(Point point)
         {
-            return (point.X % FilterBase == 0 && point.Y % FilterBase == 0);
-            // return true;
+            return (point.X %Solver.Solver.FilterBase == 0 && point.Y %Solver.Solver.FilterBase == 0);
         }
 
-        public static int FilterBase = 2;
+      
 
 
         private static bool FilterDirections(Point item, double direction, double tolerance)

@@ -60,12 +60,12 @@ namespace Vertrackt
 
         private static void cT(DateTime startTime)
         {
-            var scale = 10;
+            var scale = Solver.Solver.ScaleDown;
 
             var start = new Point(120, 180);
             var end = new Point(320, 220);
 
-            var steps = 14;
+            var steps = 8;
 
             var a = new PointD(100, 200);
             var b = new PointD(100, 100);
@@ -89,10 +89,12 @@ namespace Vertrackt
                // new LineD(new PointD(0, 150), new PointD(500, 150)), //extra
                // new LineD(new PointD(200, 100), new PointD(250, 200)), //extra
                 new LineD(new PointD(250, 300), new PointD(300, 200) ),
+                new LineD(new Point(start.X - scale, start.Y +scale), new PointD(200,start.Y+  scale)),
+                  new LineD(new Point(200 - scale, 200), new PointD(280,400)),
               };
 
 
-            var bb = new BoundingBox(new Point(start.X - 1, start.Y -1), new Point(end.X + 1, 350));
+            var bb = new BoundingBox(new Point(start.X - scale, start.Y - scale), new Point(end.X + scale, 350));
 
 
             /*  var boxesForProperEnd = new[]

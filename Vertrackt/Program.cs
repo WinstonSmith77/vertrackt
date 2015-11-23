@@ -132,10 +132,11 @@ namespace Vertrackt
         {
             Action<Result> info = result =>
             {
-                Console.WriteLine(result.Loops / (1000 * 1000) + "M Schleifen!");
-                Console.WriteLine((result.Percentage * 100).ToString("F8") + "% erledigt");
+                Console.WriteLine(result.MaxSteps + " Max  Steps!");
+                Console.WriteLine(result.Loops / (1000 * 1000) + " M Schleifen!");
+                Console.WriteLine((result.Percentage * 100).ToString("F8") + " % erledigt");
 
-                Console.WriteLine(((DateTime.Now - startTime).TotalMinutes / result.Percentage).ToString("F1") + "Minutes to go!");
+                Console.WriteLine(((DateTime.Now - startTime).TotalMinutes / result.Percentage).ToString("F1") + " Minutes to go!");
 
                 var allCarPos = Output.AllCarsInSolution(result, start);
                 foreach (var carPos in allCarPos)

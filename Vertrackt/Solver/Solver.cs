@@ -70,7 +70,7 @@ namespace Vertrackt.Solver
                         car = iterations.Pop().CarBefore;
                     }
 
-                    OutputInfos(info, loops, iterations);
+                    OutputInfos(info, loops, iterations, maxSteps);
                 }
             }
             catch (NoMoreSolutions)
@@ -104,19 +104,20 @@ namespace Vertrackt.Solver
             var needToTrackBack =
                 iterations.Count >= maxSteps ||
                 !desc.BoundingBox.IsInside(car.Position) ||
-                WrongCarState(iterations, car, desc) ||
-                CrashWithObstacles(desc.Obstacles, iterations.PeekCheckNull()?.Line)/* ||
+                IsWrongCarState(iterations, car, desc, maxSteps) ||
+                IsCrashWithObstacles(desc.Obstacles, iterations.PeekCheckNull()?.Line)/* ||
                 CheckIfTrackForCrossedOldTrack(iterations, currentIteration, car)*/;
             return needToTrackBack;
         }
 
-        private static void OutputInfos(Action<Result> info, long loops, Stack<Iteration> iterations)
+        private static void OutputInfos(Action<Result> info, long loops, Stack<Iteration> iterations, int maxSteps)
         {
             if (loops%InfoAt == 0)
             {
                 var tempResult = ExtractResults(iterations);
                 tempResult.Loops = loops;
                 tempResult.Percentage = CalcPercentage(iterations);
+                tempResult.MaxSteps = maxSteps;
                 info(tempResult);
             }
         }
@@ -157,7 +158,7 @@ namespace Vertrackt.Solver
         public const int InfoAt = 500 * 1000;
 
 
-        private static bool CrashWithObstacles(IEnumerable<LineD> obstacles, LineD? currentTrack)
+        private static bool IsCrashWithObstacles(IEnumerable<LineD> obstacles, LineD? currentTrack)
         {
             if (!currentTrack.HasValue)
             {
@@ -174,8 +175,13 @@ namespace Vertrackt.Solver
             return false;
         }
 
-        private static bool WrongCarState(Stack<Iteration> iterations, Car car, Description desc)
+        private static bool IsWrongCarState(Stack<Iteration> iterations, Car car, Description desc, int maxSteps)
         {
+            if (Car.MaxDistPossible(maxSteps - iterations.Count) < (car.Position - desc.End).Length)
+            {
+                return true;
+            }
+
             return iterations.Count > 0 &&
                    (car.Speed == Point.Zero || (car.Position == desc.End && car.Speed.LengthSqr > Steps.MaxAcceleationSqr));
         }

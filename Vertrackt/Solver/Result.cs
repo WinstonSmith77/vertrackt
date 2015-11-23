@@ -19,5 +19,6 @@ namespace Vertrackt.Solver
 
         public long Loops { get; set; }
         public double Percentage { get; set; }
+        public int MaxSteps { get; set; }
     }
 }

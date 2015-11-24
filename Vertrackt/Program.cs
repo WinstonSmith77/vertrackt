@@ -65,6 +65,8 @@ namespace Vertrackt
             var start = new Point(120, 180);
             var end = new Point(320, 220);
 
+         
+
             var a = new PointD(100, 200);
             var b = new PointD(100, 100);
 
@@ -91,12 +93,12 @@ namespace Vertrackt
                 new LineD(new Point(200 - scale, 200), new PointD(280,400)),
               }.ToList();
 
-            var lastSolutionLinePoints = new int[] { 24, 36, 34, 36, 40, 36, 46, 46, 46, 54, 52, 64, 58, 64, 64, 54, 64, 44, 64, 44 };
+          /*  var lastSolutionLinePoints = new int[] { 24, 36, 34, 36, 40, 36, 46, 46, 46, 54, 52, 64, 58, 64, 64, 54, 64, 44, 64, 44 };
             var lastSolutionLines = LineD.CreateLists(lastSolutionLinePoints, scale, scale);
             var lastSolutionLines2 = LineD.CreateLists(lastSolutionLinePoints, scale, -scale);
 
             lines.AddRange(lastSolutionLines);
-            lines.AddRange(lastSolutionLines2);
+            lines.AddRange(lastSolutionLines2);*/
 
             var bb = new BoundingBox(new Point(start.X, start.Y), new Point(end.X, 320));
 
@@ -119,6 +121,11 @@ namespace Vertrackt
               };*/
 
             // lines = new LineD[] {};
+
+            if (Solver.Solver.SwapStartAndEnd)
+            {
+                Helpers.Swap(ref start, ref end);
+            }
             var desc = new Description(start, end, lines.ToList(), bb, Solver.Solver.MaxSteps).ScaleDown(scale);
 
             return Solver.Solver.DoIt(desc, LogResult(startTime, start.ScaleDown(scale)), LogInfo(startTime, start.ScaleDown(scale)),

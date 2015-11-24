@@ -17,9 +17,9 @@ namespace Vertrackt
         {
             var startTime = DateTime.Now;
 
-            // Test(startTime);
-            cT(startTime);
-            Console.WriteLine("Fertsch! " + (DateTime.Now - startTime).TotalSeconds + " Sekunden");
+            Result result = cT(startTime);
+          
+            Console.WriteLine("Fertsch! " + (DateTime.Now - startTime).TotalSeconds + " Sekunden " + result.Loops.ToString("C0") + " Loops");
             Console.ReadKey();
         }
 
@@ -58,7 +58,7 @@ namespace Vertrackt
         }
 
 
-        private static void cT(DateTime startTime)
+        private static Result cT(DateTime startTime)
         {
             var scale = Solver.Solver.ScaleDown;
 
@@ -115,7 +115,7 @@ namespace Vertrackt
             // lines = new LineD[] {};
             var desc = new Description(start, end, lines.ToList(), bb, Solver.Solver.MaxSteps).ScaleDown(scale);
 
-            Solver.Solver.DoIt(desc, LogResult(startTime, start.ScaleDown(scale)), LogInfo(startTime, start.ScaleDown(scale)),
+           return Solver.Solver.DoIt(desc, LogResult(startTime, start.ScaleDown(scale)), LogInfo(startTime, start.ScaleDown(scale)),
                 false);
         }
 

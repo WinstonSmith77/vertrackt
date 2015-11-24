@@ -11,7 +11,7 @@ namespace Vertrackt.Solver
     {
         public static int FilterBase = 2;
         public static int ScaleDown = 10;
-        public static int MaxSteps = 10;
+        public static int MaxSteps = 13;
 
         public static Result DoIt(Description desc)
         {
@@ -118,6 +118,17 @@ namespace Vertrackt.Solver
 
         private static bool IsAccSumInvalid(int count, Point sumAcc, int maxSteps)
         {
+            if (Math.Abs(sumAcc.X) > (maxSteps - count) * Steps.MaxAcceleation)
+            {
+                return true;
+            }
+
+
+            if (Math.Abs(sumAcc.Y) > (maxSteps - count) * Steps.MaxAcceleation)
+            {
+                return true;
+            }
+
             return false;
         }
 

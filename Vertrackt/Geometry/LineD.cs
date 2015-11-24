@@ -184,6 +184,25 @@ namespace Vertrackt.Geometry
                 results.Add(line);
             }
 
+            for (int i = 0; i < results.Count() - 1; i++)
+            {
+                var a = results[i];
+                var b = results[i + 1];
+
+                if (a.B != b.A)
+                {
+                    var interSection = a.Intersection(b);
+
+                    results[i] = new LineD(a.A, interSection);
+                    results[i + 1] = new LineD(interSection, b.B);
+                }
+                else
+                {
+                    results[i] = new LineD(a.A, b.B);
+                    results.RemoveAt(i + 1);
+                }
+            }
+
             return results;
         }
     }

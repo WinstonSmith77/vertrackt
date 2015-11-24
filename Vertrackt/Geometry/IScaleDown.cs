@@ -9,5 +9,6 @@ namespace Vertrackt.Geometry
     public  interface IScaleDown<T>
     {
         T ScaleDown(int scale);
+        T ScaleUp(int scale);
     }
 }

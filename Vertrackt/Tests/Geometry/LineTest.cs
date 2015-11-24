@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 using Vertrackt.Geometry;
 
 namespace Vertrackt.Tests.Geometry
@@ -66,6 +67,28 @@ namespace Vertrackt.Tests.Geometry
                 new LineD(new PointD(-1, 1), new PointD(0,0) ),
                 new PointD(0, 0)
         };
+        }
+
+        [TestCaseSource(nameof(ShiftTest))]
+        public static void Shift(LineD start, double shift, LineD result)
+        {
+            var shifted = start.ShiftOrthoToDirection(shift);
+
+            shifted.Should().Be(result);
+        }
+
+
+        private static IEnumerable<object> ShiftTest()
+        {
+            yield return new object[]
+            {
+                new LineD(new PointD(0, 0), new PointD(0,1)),  2.0d, new LineD( new PointD(2, 0), new PointD(2,1)  ),
+            };
+
+            yield return new object[]
+           {
+                new LineD(new PointD(0, 0), new PointD(1,0)),  -2.0d, new LineD( new PointD(0, 2), new PointD(1,2)  )
+           };
         }
     }
 }

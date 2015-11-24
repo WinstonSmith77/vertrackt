@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -33,6 +34,14 @@ namespace Vertrackt
                        .Select(x => x.Select(y => y.item));
         }
 
+
+        public static IEnumerable<IEnumerable<T>> SlicteToChunks<T>(this IEnumerable<T> list, int length)
+        {
+            return list
+                .Select((item, index) => new { index, item })
+                       .GroupBy(x => x.index / length)
+                       .Select(x => x.Select(y => y.item));
+        }
 
         public static void Swap<T>(ref T a, ref T b)
         {

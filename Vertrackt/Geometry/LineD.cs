@@ -8,11 +8,41 @@ namespace Vertrackt.Geometry
 {
     public struct LineD : IScaleDown<LineD>
     {
+        public override bool Equals(object obj)
+        {
+            if (!(obj is LineD))
+            {
+                return false;
+            }
+
+            return ((LineD)obj) == this;
+        }
+
+        public static bool operator ==(LineD a, LineD b)
+        {
+            return a.A == b.A && a.B == b.B;
+        }
+
+        public static bool operator !=(LineD a, LineD b)
+        {
+            return !(a == b);
+        }
+
+        public override int GetHashCode()
+        {
+            return (A.GetHashCode() * 397) ^ B.GetHashCode();
+        }
 
         public LineD ScaleDown(int scale)
         {
             return new LineD(A.ScaleDown(scale), B.ScaleDown(scale));
         }
+
+        public LineD ScaleUp(int scale)
+        {
+            return new LineD(A.ScaleUp(scale), B.ScaleUp(scale));
+        }
+
 
         public PointD A { get; }
         public PointD B { get; }
@@ -108,6 +138,16 @@ namespace Vertrackt.Geometry
             return FromPointAndDirection(point, orthoVector);
         }
 
+
+        public LineD ShiftOrthoToDirection(double distance)
+        {
+            var orthoVector = Direction.CrossProd(1);
+
+            var shift = orthoVector.Normalize() * distance;
+
+            return new LineD(A + shift, B + shift);
+        }
+
         public static LineD FromPointAndDirection(PointD a, PointD direction)
         {
             return new LineD(a, a + direction);
@@ -116,6 +156,35 @@ namespace Vertrackt.Geometry
         public override string ToString()
         {
             return $"({A},{B})";
+        }
+
+
+        public static List<LineD> CreateLists(int[] points, int scale, int shift)
+        {
+            var allPoint = points.SlicteToChunks(2)
+                .Select(item => new PointD(item.First(), item.Last())).ToList();
+
+            if (allPoint.Count < 2)
+            {
+                return new List<LineD>();
+            }
+
+            var results = new List<LineD>();
+            for (int i = 0; i < allPoint.Count() - 1; i++)
+            {
+                var a = allPoint[i];
+                var b = allPoint[i + 1];
+
+                if (a == b)
+                {
+                    continue;
+                }
+
+                var line = new LineD(a, b).ScaleUp(scale).ShiftOrthoToDirection(shift);
+                results.Add(line);
+            }
+
+            return results;
         }
     }
 }

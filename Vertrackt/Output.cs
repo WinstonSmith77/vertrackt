@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NUnit.Framework.Constraints;
 using Vertrackt.Geometry;
 using Vertrackt.Solver;
 
@@ -27,21 +28,27 @@ namespace Vertrackt
 
             var cars = AllCarsInSolution(result, start);
 
+
             foreach (var car in cars)
             {
                 resultLines.Add(car.ToString());
             }
+
+            resultLines.Add("");
+            resultLines.Add("");
+
+            resultLines.Add(string.Join(";", cars.Select(item => new[] { item.Position.X.ToString(), item.Position.Y.ToString()}).SelectMany(item => item)));
 
             return resultLines;
         }
 
         public static List<Car> AllCarsInSolution(Result result, Point start)
         {
-            var cars = result.Solution.Aggregate(new List<Car> {new Car(start)}, (list, acc) =>
-            {
-                list.Add(list.Last().Iterate(acc));
-                return list;
-            });
+            var cars = result.Solution.Aggregate(new List<Car> { new Car(start) }, (list, acc) =>
+              {
+                  list.Add(list.Last().Iterate(acc));
+                  return list;
+              });
             return cars;
         }
 

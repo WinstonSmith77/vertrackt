@@ -18,7 +18,7 @@ namespace Vertrackt
             var startTime = DateTime.Now;
 
             Result result = cT(startTime);
-          
+
             Console.WriteLine("Fertsch! " + (DateTime.Now - startTime).TotalSeconds + " Sekunden " + result.Loops.ToString("C0") + " Loops");
             Console.ReadKey();
         }
@@ -71,28 +71,34 @@ namespace Vertrackt
             var c = new PointD(300, 200);
             var d = new PointD(300, 100);
 
-            var lines = new LineD[]
+            var lines = new[]
             {
                 new LineD(new PointD(250, 300), new PointD(250, 150) ),
 
                 new LineD(a, new PointD(200, 200) ),
-               // new LineD(b, new PointD(200, 100) ),
-               // new LineD(a, b ),
+                new LineD(b, new PointD(200, 100) ),
+                new LineD(a, b ),
 
                 new LineD(c, new PointD(400, 200) ),
-               // new LineD(d, new PointD(400, 100) ),
+                new LineD(d, new PointD(400, 100) ),
 
                 new LineD( new PointD(300, 300), d ),
 
-               // new LineD(new PointD(0, 150), new PointD(500, 150)), //extra
-               // new LineD(new PointD(200, 100), new PointD(250, 200)), //extra
+                new LineD(new PointD(0, 150), new PointD(500, 150)), //extra
+                new LineD(new PointD(200, 100), new PointD(250, 200)), //extra
                 new LineD(new PointD(250, 300), new PointD(300, 200) ),
                 new LineD(new Point(start.X - scale, start.Y +scale), new PointD(200,start.Y+  scale)),
-                  new LineD(new Point(200 - scale, 200), new PointD(280,400)),
-              };
+                new LineD(new Point(200 - scale, 200), new PointD(280,400)),
+              }.ToList();
 
+            var lastSolutionLinePoints = new int[] { 24, 36, 34, 36, 40, 36, 46, 46, 46, 54, 52, 64, 58, 64, 64, 54, 64, 44, 64, 44 };
+            var lastSolutionLines = LineD.CreateLists(lastSolutionLinePoints, scale, scale);
+            var lastSolutionLines2 = LineD.CreateLists(lastSolutionLinePoints, scale, -scale);
 
-            var bb = new BoundingBox(new Point(start.X - scale, start.Y - scale), new Point(end.X + scale, 350));
+            lines.AddRange(lastSolutionLines);
+            lines.AddRange(lastSolutionLines2);
+
+            var bb = new BoundingBox(new Point(start.X, start.Y), new Point(end.X, 320));
 
 
             /*  var boxesForProperEnd = new[]
@@ -115,8 +121,8 @@ namespace Vertrackt
             // lines = new LineD[] {};
             var desc = new Description(start, end, lines.ToList(), bb, Solver.Solver.MaxSteps).ScaleDown(scale);
 
-           return Solver.Solver.DoIt(desc, LogResult(startTime, start.ScaleDown(scale)), LogInfo(startTime, start.ScaleDown(scale)),
-                false);
+            return Solver.Solver.DoIt(desc, LogResult(startTime, start.ScaleDown(scale)), LogInfo(startTime, start.ScaleDown(scale)),
+                 false);
         }
 
         private static Action<Result> LogResult(DateTime startTime, Point start)

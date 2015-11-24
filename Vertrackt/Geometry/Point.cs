@@ -14,6 +14,11 @@ namespace Vertrackt.Geometry
             return new Point(X / scale, Y / scale);
         }
 
+        public Point ScaleUp(int scale)
+        {
+            return new Point(X * scale, Y * scale);
+        }
+
         public override string ToString()
         {
             return $"{X};{Y}";

@@ -57,5 +57,10 @@ namespace Vertrackt.Solver
                Steps,
                AuxEnd);
         }
+
+        public Description ScaleUp(int scale)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

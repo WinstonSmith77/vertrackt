@@ -17,5 +17,10 @@ namespace Vertrackt.Geometry
         {
             return this;
         }
+
+        public IBoundingBox ScaleUp(int scale)
+        {
+            return this;
+        }
     }
 }

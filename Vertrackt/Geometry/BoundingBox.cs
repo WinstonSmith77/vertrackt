@@ -44,5 +44,10 @@ namespace Vertrackt.Geometry
         {
             return new BoundingBox(_left / scale, _right / scale, _bottom / scale, _top / scale);
         }
+
+        public IBoundingBox ScaleUp(int scale)
+        {
+            return new BoundingBox(_left * scale, _right * scale, _bottom * scale, _top * scale);
+        }
     }
 }

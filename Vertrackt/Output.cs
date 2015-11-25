@@ -13,10 +13,9 @@ namespace Vertrackt
 {
     public static class Output
     {
-
         public static List<string> CtOutput(this Result result)
         {
-            return result.Solution.Select(acc => acc.ToStringCt()).ToList();
+            return result.Solution.Select(acc => acc.Direction.ToStringCt()).ToList();
         }
 
         public static List<string> OutputCSV(this Result result, Point start, DateTime startTime)
@@ -46,7 +45,7 @@ namespace Vertrackt
         {
             var cars = result.Solution.Aggregate(new List<Car> { new Car(start) }, (list, acc) =>
               {
-                  list.Add(list.Last().Iterate(acc));
+                  list.Add(list.Last().Iterate(acc.Direction));
                   return list;
               });
             return cars;
@@ -63,6 +62,27 @@ namespace Vertrackt
             }
 
             return path;
+        }
+
+
+        public static double CalcPercentage(IEnumerable<Iteration> iterations , int startAt)
+        {
+
+            var data = iterations.Select((it, index) => new { Percentage = (double)it.Index / it.Steps.Count, Total = it.Steps.Count }).Skip(startAt).ToList();
+
+            var result = (double)0;
+
+            for (int i = 0; i < data.Count; i++)
+            {
+                var partDone = data[i].Percentage;
+                for (int j = i - 1; j >= 0; j--)
+                {
+                    partDone /= data[j].Total;
+                }
+                result += partDone;
+            }
+
+            return result;
         }
     }
 }

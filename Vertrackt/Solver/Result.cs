@@ -9,16 +9,14 @@ namespace Vertrackt.Solver
 {
     public class Result
     {
-        public Result(IEnumerable<Point>  solution)
+        public Result(Stack<Iteration>  solution)
         {
-            Solution = solution;
-            Percentage = 1;
+            Solution = solution.Reverse();
         }
 
-        public IEnumerable<Point> Solution { get; }
+        public IEnumerable<Iteration> Solution { get; }
 
         public long Loops { get; set; }
-        public double Percentage { get; set; }
         public int MaxSteps { get; set; }
     }
 }

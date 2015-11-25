@@ -19,7 +19,7 @@ namespace Vertrackt.Tests
         {
             var result = Solver.Solver.DoIt(new Description(start, end, steps));
 
-            var shouldBeEnd = result.Solution.Aggregate(new Car(start), (car, acc) => car.Iterate(acc));
+            var shouldBeEnd = result.Solution.Aggregate(new Car(start), (car, acc) => car.Iterate(acc.Direction));
 
             shouldBeEnd.Position.Should().Be(end);
             shouldBeEnd.Speed.Should().Be(Point.Zero);
@@ -48,7 +48,7 @@ namespace Vertrackt.Tests
         {
             var result = Solver.Solver.DoIt(new Description(start, end, obstacles.ToList(), bb, steps ));
 
-            var shouldBeEnd = result.Solution.Aggregate(new Car(start), (car, acc) => car.Iterate(acc));
+            var shouldBeEnd = result.Solution.Aggregate(new Car(start), (car, acc) => car.Iterate(acc.Direction));
 
             shouldBeEnd.Position.Should().Be(end);
             shouldBeEnd.Speed.Should().Be(Point.Zero);

@@ -10,9 +10,9 @@ namespace Vertrackt.Solver
     public static class Solver
     {
         public static int FilterBase = 2;
-        public static int ScaleDown = 2;
-        public static int MaxSteps = 15;
-        public static bool SwapStartAndEnd = true;
+        public static int ScaleDown = 1;
+        public static int MaxSteps = 20;
+        public static bool SwapStartAndEnd = false;
 
         public static Result DoIt(Description desc)
         {
@@ -139,7 +139,6 @@ namespace Vertrackt.Solver
             {
                 var tempResult = ExtractResults(iterations);
                 tempResult.Loops = loops;
-                tempResult.Percentage = CalcPercentage(iterations);
                 tempResult.MaxSteps = maxSteps;
                 info(tempResult);
             }
@@ -159,24 +158,6 @@ namespace Vertrackt.Solver
             return true;
         }
 
-        private static double CalcPercentage(Stack<Iteration> iterations)
-        {
-            var data = iterations.Reverse().Select((it, index) => new { Percentage = (double)it.Index / it.Steps.Count, Total = it.Steps.Count }).ToList();
-
-            var result = (double)0;
-
-            for (int i = 0; i < data.Count; i++)
-            {
-                var partDone = data[i].Percentage;
-                for (int j = i - 1; j >= 0; j--)
-                {
-                    partDone /= data[j].Total;
-                }
-                result += partDone;
-            }
-
-            return result;
-        }
 
         public const int InfoAt = 500 * 1000;
 
@@ -255,7 +236,7 @@ namespace Vertrackt.Solver
 
         private static Result ExtractResults(Stack<Iteration> iterations)
         {
-            return new Result(iterations.Reverse().Select(item => item.Direction).ToList());
+            return new Result(iterations);
         }
 
         private static Tuple<Iteration, Car> TrackBackOneStep(Stack<Iteration> iterations)

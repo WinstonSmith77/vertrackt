@@ -3,7 +3,7 @@ using Vertrackt.Geometry;
 
 namespace Vertrackt.Solver
 {
-    class Iteration
+    public class Iteration
     {
         private readonly Point _lastSumAcc;
 

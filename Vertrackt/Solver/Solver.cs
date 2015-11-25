@@ -10,9 +10,8 @@ namespace Vertrackt.Solver
     public static class Solver
     {
         public static int FilterBase = 2;
-        public static int ScaleDown = 2;
-        public static int MaxSteps = 15;
-        public static bool SwapStartAndEnd = true;
+        public static int ScaleDown = 5;
+        public static int MaxSteps = 22;
 
         public static Result DoIt(Description desc)
         {
@@ -48,6 +47,8 @@ namespace Vertrackt.Solver
                         currentIteration = temp.Item1;
                         car = temp.Item2;
                         lastDirection = null;
+
+                        OutputInfos(info, loops, iterations, maxSteps);
                     }
                     else
                     {
@@ -73,7 +74,7 @@ namespace Vertrackt.Solver
                         car = iterations.Pop().CarBefore;
                     }
 
-                    OutputInfos(info, loops, iterations, maxSteps);
+                  
                 }
             }
             catch (NoMoreSolutions)
@@ -114,6 +115,7 @@ namespace Vertrackt.Solver
                 ||
                 CheckIfTrackForCrossedOldTrack(iterations, currentIteration, car)
                 );
+
             return needToTrackBack;
         }
 
@@ -188,7 +190,14 @@ namespace Vertrackt.Solver
                 return false;
             }
 
-            return obstacles.Any(obstacle => obstacle.IntersectionAndOnBothLines(currentTrack.Value, false) != null);
+            foreach (var obstacle in obstacles)
+            {
+                if (obstacle.IntersectionAndOnBothLines(currentTrack.Value, false) != null)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private static bool IsWrongCarState(int iterationsCount, Car car, Description desc, int maxSteps)

@@ -71,40 +71,34 @@ namespace Vertrackt
             var c = new PointD(300, 200);
             var d = new PointD(300, 100);
 
-            var sperrPunkt = new Point(200, 200);
-
             var lines = new[]
             {
-               
+                new LineD(new PointD(250, 300), new PointD(250, 150) ),
 
-                new LineD(a, sperrPunkt ),
-
-                 new LineD(new PointD(250, 500), sperrPunkt ),
+                new LineD(a, new PointD(200, 200) ),
                 new LineD(b, new PointD(200, 100) ),
                 new LineD(a, b ),
 
                 new LineD(c, new PointD(400, 200) ),
                 new LineD(d, new PointD(400, 100) ),
-                new LineD(d, c ),
 
                 new LineD( new PointD(300, 300), d ),
 
+                new LineD(new PointD(0, 150), new PointD(500, 150)), //extra
                 new LineD(new PointD(200, 100), new PointD(250, 200)), //extra
-                new LineD(new PointD(250, 300), new PointD(300, 300) ),
-                 new LineD(new PointD(200, 200), new PointD(200, 400) ),
-                  new LineD(new PointD(250, 300), new PointD(250, 0) ),
-               // new LineD(new Point(start.X - scale, start.Y +scale), new PointD(200,start.Y+  scale)),
-              //  new LineD(new Point(200 - scale, 200), new PointD(280,400)),
+                new LineD(new PointD(250, 300), new PointD(300, 200) ),
+                new LineD(new Point(start.X - scale, start.Y +scale), new PointD(200,start.Y+  scale)),
+                new LineD(new Point(200 - scale, 200), new PointD(280,400)),
               }.ToList();
 
-           /* var lastSolutionLinePoints = new int[] { 24, 36, 34, 36, 40, 36, 46, 46, 46, 54, 52, 64, 58, 64, 64, 54, 64, 44, 64, 44 };
+            var lastSolutionLinePoints = new int[] { 24, 36, 34, 36, 40, 36, 46, 46, 46, 54, 52, 64, 58, 64, 64, 54, 64, 44, 64, 44 };
             var lastSolutionLines = LineD.CreateLists(lastSolutionLinePoints, scale, scale);
             var lastSolutionLines2 = LineD.CreateLists(lastSolutionLinePoints, scale, -scale);
 
             lines.AddRange(lastSolutionLines);
-            lines.AddRange(lastSolutionLines2);*/
+            lines.AddRange(lastSolutionLines2);
 
-            var bb = new BoundingBox(new Point(start.X, start.Y), new Point(end.X, 330));
+            var bb = new BoundingBox(new Point(start.X, start.Y), new Point(end.X, 320));
 
 
             /*  var boxesForProperEnd = new[]

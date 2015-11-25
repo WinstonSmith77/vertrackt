@@ -9,9 +9,9 @@ namespace Vertrackt.Solver
 {
     public static class Solver
     {
-        public static int FilterBase = 1;
-        public static int ScaleDown = 10;
-        public static int MaxSteps = 15;
+        public static int FilterBase = 2;
+        public static int ScaleDown = 5;
+        public static int MaxSteps = 22;
 
         public static Result DoIt(Description desc)
         {
@@ -47,6 +47,8 @@ namespace Vertrackt.Solver
                         currentIteration = temp.Item1;
                         car = temp.Item2;
                         lastDirection = null;
+
+                        OutputInfos(info, loops, iterations, maxSteps);
                     }
                     else
                     {
@@ -72,7 +74,7 @@ namespace Vertrackt.Solver
                         car = iterations.Pop().CarBefore;
                     }
 
-                    OutputInfos(info, loops, iterations, maxSteps);
+                  
                 }
             }
             catch (NoMoreSolutions)
@@ -113,6 +115,7 @@ namespace Vertrackt.Solver
                 ||
                 CheckIfTrackForCrossedOldTrack(iterations, currentIteration, car)
                 );
+
             return needToTrackBack;
         }
 

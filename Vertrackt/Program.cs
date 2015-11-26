@@ -90,8 +90,8 @@ namespace Vertrackt
 
 
                 new LineD(new PointD(250, 300), new PointD(300, 300) ),
-                new LineD(new Point(start.X - scale, start.Y +scale), new PointD(200, 200)),
-                new LineD(new Point(200 , 200), new PointD(250,500)),
+                new LineD(new Point(start.X - scale, start.Y +scale), new PointD(start.X - scale, start.Y +scale)),
+               
               }.ToList();
 
             /*  var lastSolutionLinePoints = new int[] { 24, 36, 34, 36, 40, 36, 46, 46, 46, 54, 52, 64, 58, 64, 64, 54, 64, 44, 64, 44 };
@@ -117,7 +117,7 @@ namespace Vertrackt
                  
               };
 
-            var auxEndPoint = new Point(250, 310);
+            var auxEndPoint = new Point(249, 300);
             var auxEndPoint2 = new Point(301, 300);
             var end1 = end;
             Func<Point, Point> auxEnd = point =>

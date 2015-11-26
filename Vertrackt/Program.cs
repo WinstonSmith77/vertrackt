@@ -104,22 +104,23 @@ namespace Vertrackt
             var bb = new BoundingBox(new Point(start.X, start.Y), new Point(end.X, 320));
 
 
-            /*  var boxesForProperEnd = new[]
-              {
-                  new BoundingBox(new Point(300, 200), new Point(500, 400)),
-                  new BoundingBox(new Point(250, 300), new Point(500, 400)).Inflate(10)
+            var boxesForProperEnd = new[]
+            {
+                  new BoundingBox(new Point(248, 240), new Point(500, 400)),
+                  new BoundingBox(new Point(300, 200), new Point(500, 400))
               };
 
+            var auxEndPoint = new Point(250, 350);
+            Func<Point, Point> auxEnd = point =>
+            {
+                point = point.ScaleUp(scale);
+                if (boxesForProperEnd.Any(box => box.IsInside(point)))
+                {
+                    return end;
+                }
 
-              Func<Point, Point> auxEnd = point =>
-              {
-                  if (boxesForProperEnd.Any(box => box.IsInside(point)))
-                  {
-                      return end;
-                  }
-
-                  return auxEndPoint;
-              };*/
+                return auxEndPoint;
+            };
 
             // lines = new LineD[] {};
 
@@ -127,7 +128,7 @@ namespace Vertrackt
             {
                 Helpers.Swap(ref start, ref end);
             }
-            var desc = new Description(start, end, lines.ToList(), bb, Solver.Solver.MaxSteps).ScaleDown(scale);
+            var desc = new Description(start, end, lines.ToList(), bb, Solver.Solver.MaxSteps, auxEnd).ScaleDown(scale);
 
             return Solver.Solver.DoIt(desc, LogResult(startTime, start.ScaleDown(scale)), LogInfo(startTime, start.ScaleDown(scale)),
                  false);
@@ -165,7 +166,7 @@ namespace Vertrackt
                 int index = 0;
                 foreach (var carPos in allCarPos.Skip(1))
                 {
-                    Console.WriteLine('\t' + carPos.Position.ToString() +  " " + (percentages[index++] * 100).ToString("F8") + "%");
+                    Console.WriteLine('\t' + carPos.Position.ToString() + " " + (percentages[index++] * 100).ToString("F8") + "%");
                 }
             };
             return info;

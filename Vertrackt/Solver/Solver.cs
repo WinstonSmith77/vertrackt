@@ -11,7 +11,7 @@ namespace Vertrackt.Solver
     {
         public static int FilterBase = 2;
         public static int ScaleDown = 1;
-        public static int MaxSteps = 20;
+        public static int MaxSteps = 25;
         public static bool SwapStartAndEnd = false;
 
         public static Result DoIt(Description desc)

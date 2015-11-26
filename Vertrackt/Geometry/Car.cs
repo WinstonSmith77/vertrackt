@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Vertrackt.Geometry
 {
-    public class Car
+    public class Car : IScaleDown<Car>
     {
         public Point Acceleration { get; }
 
@@ -21,14 +21,18 @@ namespace Vertrackt.Geometry
 
         public Point Speed { get; }
 
-        public Car(Point position)
+        public Car(Point position) : this(position, Point.Zero)
+        {
+        }
+
+        public Car(Point position, Point speed)
         {
             Position = position;
-            Speed = new Point(0, 0);
+            Speed = speed;
         }
 
         private Car(Point position, Point speed, Point acceleration)
-            : this(position)
+            : this(position, speed)
         {
             Acceleration = acceleration;
             Speed = speed;
@@ -59,6 +63,16 @@ namespace Vertrackt.Geometry
                 _stepsToDist.Add(i, car.Position.X);
                 car = car.Iterate(new Point(Steps.MaxAcceleation, 0));
             }
+        }
+
+        public Car ScaleDown(int scale)
+        {
+            return new Car(Position.ScaleDown(scale), Speed, Acceleration);
+        }
+
+        public Car ScaleUp(int scale)
+        {
+            return new Car(Position.ScaleUp(scale), Speed, Acceleration);
         }
     }
 }

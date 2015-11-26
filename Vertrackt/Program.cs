@@ -52,7 +52,7 @@ namespace Vertrackt
 
             var bb = new BoundingBox(start, end).Inflate(0, 0, Math.Abs(height) + 2, 1);
 
-            var desc = new Description(start, end, lines.ToList(), bb, steps);
+            var desc = new Description(new Car(start), end, lines.ToList(), bb, steps);
 
             Solver.Solver.DoIt(desc, LogResult(startTime, start), LogInfo(startTime, start),
                 false);
@@ -128,7 +128,7 @@ namespace Vertrackt
             {
                 Helpers.Swap(ref start, ref end);
             }
-            var desc = new Description(start, end, lines.ToList(), bb, Solver.Solver.MaxSteps, auxEnd).ScaleDown(scale);
+            var desc = new Description(new Car(start), end, lines.ToList(), bb, Solver.Solver.MaxSteps, auxEnd).ScaleDown(scale);
 
             return Solver.Solver.DoIt(desc, LogResult(startTime, start.ScaleDown(scale)), LogInfo(startTime, start.ScaleDown(scale)),
                  false);

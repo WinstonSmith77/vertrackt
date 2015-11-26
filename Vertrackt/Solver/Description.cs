@@ -10,13 +10,13 @@ namespace Vertrackt.Solver
 {
     public class Description : IScaleDown<Description>
     {
-        public Point Start { get; }
+        public Car Start { get; }
         public Point End { get; private set; }
         public List<LineD> Obstacles { get; }
         public IBoundingBox BoundingBox { get; }
         public int Steps { get; }
 
-        public Description(Point start, Point end, List<LineD> obstacles, IBoundingBox boundingBox, int steps, Func<Point, Point> auxEnd = null)
+        public Description(Car start, Point end, List<LineD> obstacles, IBoundingBox boundingBox, int steps, Func<Point, Point> auxEnd = null)
         {
 
             if (auxEnd == null)
@@ -36,7 +36,7 @@ namespace Vertrackt.Solver
 
         public Func<Point, Point> AuxEnd { get; }
 
-        public Description(Point start, Point end, int steps) :
+        public Description(Car start, Point end, int steps) :
             this(start, end, new List<LineD>(), new AlwaysInsideBoundIngBox(), steps, null)
         {
             Start = start;

@@ -17,7 +17,7 @@ namespace Vertrackt.Tests
         [TestCaseSource(nameof(TestCasesSimple))]
         public static void TestSimple(Point start, Point end, int steps)
         {
-            var result = Solver.Solver.DoIt(new Description(start, end, steps));
+            var result = Solver.Solver.DoIt(new Description(new Car(start), end, steps));
 
             var shouldBeEnd = result.Solution.Aggregate(new Car(start), (car, acc) => car.Iterate(acc.Direction));
 
@@ -46,7 +46,7 @@ namespace Vertrackt.Tests
         [TestCaseSource(nameof(TestCasesObstacle))]
         public static void TestObstacle(Point start, Point end, int steps, IEnumerable<LineD> obstacles, IBoundingBox bb)
         {
-            var result = Solver.Solver.DoIt(new Description(start, end, obstacles.ToList(), bb, steps ));
+            var result = Solver.Solver.DoIt(new Description(new Car(start), end, obstacles.ToList(), bb, steps));
 
             var shouldBeEnd = result.Solution.Aggregate(new Car(start), (car, acc) => car.Iterate(acc.Direction));
 
@@ -72,8 +72,8 @@ namespace Vertrackt.Tests
                 new BoundingBox(new Point(20, 0), new Point(0,0)).Inflate(5),
             };
 
-           yield return new object[]
-           {
+            yield return new object[]
+            {
                 new Point(40, 0),
                 new Point(0, 0), 15,
                 new[]
@@ -83,7 +83,7 @@ namespace Vertrackt.Tests
                     new LineD(new PointD(10, 2), new PointD(10, -2)),
                 },
                 new BoundingBox(new Point(40, 0), new Point(0,0)).Inflate(0,0, 5, 1),
-           };
+            };
 
             yield return new object[]
          {

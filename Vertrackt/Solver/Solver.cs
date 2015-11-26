@@ -29,7 +29,7 @@ namespace Vertrackt.Solver
                 var stepHelper = new Steps();
 
                 var iterations = new Stack<Iteration>();
-                var car = new Car(desc.Start);
+                var car = desc.Start;
 
                 Iteration currentIteration = null;
                 double? lastDirection = null;

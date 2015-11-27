@@ -94,12 +94,12 @@ namespace Vertrackt
                 new LineD(new Point(200 - scale, 200), new PointD(280,400)),
               }.ToList();
 
-            var lastSolutionLinePoints = new int[] { 24, 36, 34, 36, 40, 36, 46, 46, 46, 54, 52, 64, 58, 64, 64, 54, 64, 44, 64, 44 };
+         /*   var lastSolutionLinePoints = new int[] { 24, 36, 34, 36, 40, 36, 46, 46, 46, 54, 52, 64, 58, 64, 64, 54, 64, 44, 64, 44 };
             var lastSolutionLines = LineD.CreateLists(lastSolutionLinePoints, scale, scale);
             var lastSolutionLines2 = LineD.CreateLists(lastSolutionLinePoints, scale, -scale);
 
             lines.AddRange(lastSolutionLines);
-            lines.AddRange(lastSolutionLines2);
+            lines.AddRange(lastSolutionLines2);*/
 
             var bb = new BoundingBox(new Point(start.X, start.Y), new Point(end.X, 320));
 

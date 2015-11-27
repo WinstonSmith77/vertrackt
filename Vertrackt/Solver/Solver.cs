@@ -60,7 +60,7 @@ namespace Vertrackt.Solver
                     iterations.Push(currentIteration);
                     car = car.Iterate(currentIteration.Direction);
 
-                    if (car.Position == desc.End && car.Speed == Point.Zero)
+                    if (IsSolution(desc, car))
                     {
                         result = ExtractResults(iterations);
                         if (skipAtFirstSolution)
@@ -82,6 +82,11 @@ namespace Vertrackt.Solver
 
             result.Loops = loops;
             return result;
+        }
+
+        private static bool IsSolution(Description desc, Car car)
+        {
+            return car.Position == desc.End && car.Speed == Point.Zero;
         }
 
         private static Iteration NewDirection(out double direction, Description desc, Car car, double? lastDirection,

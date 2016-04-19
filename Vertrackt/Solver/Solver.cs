@@ -11,7 +11,7 @@ namespace Vertrackt.Solver
     public static class Solver
     {
         public static int FilterBase = 2;
-        public static int ScaleDown = 2;
+        public static int ScaleDown = 1;
         public static int MaxSteps = 25;
         public static bool SwapStartAndEnd = false;
 
@@ -115,7 +115,7 @@ namespace Vertrackt.Solver
         private static bool NeedToTrackBack(Description desc, Stack<Iteration> iterations,
             Car car, Iteration currentIteration, int maxSteps, Dictionary<int, HashSet<Tuple<Point, Point>>> deadEnds)
         {
-            if (IsDeadEnd(car, deadEnds, iterations.Count, maxSteps))
+            if (IsDeadEnd(car, deadEnds, iterations.Count))
             {
                 return true;
             }
@@ -133,9 +133,9 @@ namespace Vertrackt.Solver
             return needToTrackBack;
         }
 
-        private static bool IsDeadEnd(Car car, Dictionary<int, HashSet<Tuple<Point, Point>>> deadEnds, int count, int maxSteps)
+        private static bool IsDeadEnd(Car car, Dictionary<int, HashSet<Tuple<Point, Point>>> deadEnds, int count)
         {
-            for (int i = count; i < maxSteps; i++)
+            for (int i = count; i >=0; i--)
             {
                 if (deadEnds.ContainsKey(i))
                 {

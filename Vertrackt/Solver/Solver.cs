@@ -9,9 +9,9 @@ namespace Vertrackt.Solver
 {
     public static class Solver
     {
-        public static int FilterBase = 2;
+        public static int FilterBase = 1;
         public static int ScaleDown = 1;
-        public static int MaxSteps = 25;
+        public static int MaxSteps = 20;
         public static bool SwapStartAndEnd = false;
 
         public static Result DoIt(Description desc)
@@ -60,7 +60,7 @@ namespace Vertrackt.Solver
                     iterations.Push(currentIteration);
                     car = car.Iterate(currentIteration.Direction);
 
-                    if (car.Position == desc.End && car.Speed == Point.Zero)
+                    if (IsSolution(desc, car, iterations))
                     {
                         result = ExtractResults(iterations);
                         if (skipAtFirstSolution)
@@ -82,6 +82,11 @@ namespace Vertrackt.Solver
 
             result.Loops = loops;
             return result;
+        }
+
+        private static bool IsSolution(Description desc, Car car, Stack<Iteration>  iterations)
+        {
+            return car.Position == desc.End && car.Speed == Point.Zero && IsCrashWithObstacles(desc.Obstacles, iterations.PeekCheckNull()?.Line);
         }
 
         private static Iteration NewDirection(out double direction, Description desc, Car car, double? lastDirection,
@@ -111,8 +116,8 @@ namespace Vertrackt.Solver
                 IsAccSumInvalid(iterations.Count, currentIteration.SumAcc, maxSteps) ||
                 IsWrongCarState(iterations.Count, car, desc, maxSteps) ||
                 IsCrashWithObstacles(desc.Obstacles, iterations.PeekCheckNull()?.Line)
-                ||
-                CheckIfTrackForCrossedOldTrack(iterations, currentIteration, car)
+               /* ||
+                CheckIfTrackForCrossedOldTrack(iterations, currentIteration, car)*/
                 );
             return needToTrackBack;
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Channels;
 using System.Threading.Tasks;
 using NUnit.Framework.Constraints;
 using Vertrackt.Geometry;
@@ -10,17 +11,22 @@ namespace Vertrackt.Solver
     public static class Solver
     {
         public static int FilterBase = 2;
-        public static int ScaleDown = 1;
+        public static int ScaleDown = 2;
         public static int MaxSteps = 25;
         public static bool SwapStartAndEnd = false;
+
 
         public static Result DoIt(Description desc)
         {
             return DoIt(desc, dummy => { }, (dummy) => { }, true);
         }
 
+
+
         public static Result DoIt(Description desc, Action<Result> imediateResult, Action<Result> info, bool skipAtFirstSolution)
         {
+            Dictionary<int, HashSet<Tuple<Point, Point>>> deadEnds = new Dictionary<int, HashSet<Tuple<Point, Point>>>();
+
             var maxSteps = desc.Steps;
             Result result = null;
             var loops = (long)0;
@@ -39,11 +45,11 @@ namespace Vertrackt.Solver
 
                     // var hasSichtLinie = HasSichtLine(desc.Obstacles, car.Position, desc.AuxEnd(car.Position));
 
-                    var needToTrackBack = NeedToTrackBack(desc, iterations, car, currentIteration, maxSteps);
+                    var needToTrackBack = NeedToTrackBack(desc, iterations, car, currentIteration, maxSteps, deadEnds);
 
                     if (needToTrackBack)
                     {
-                        var temp = TrackBackOneStep(iterations);
+                        var temp = TrackBackOneStep(iterations, car, deadEnds);
 
                         currentIteration = temp.Item1;
                         car = temp.Item2;
@@ -107,8 +113,13 @@ namespace Vertrackt.Solver
         }
 
         private static bool NeedToTrackBack(Description desc, Stack<Iteration> iterations,
-            Car car, Iteration currentIteration, int maxSteps)
+            Car car, Iteration currentIteration, int maxSteps, Dictionary<int, HashSet<Tuple<Point, Point>>> deadEnds)
         {
+            if (IsDeadEnd(car, deadEnds, iterations.Count, maxSteps))
+            {
+                return true;
+            }
+
             var needToTrackBack = iterations.Any() &&
                 (
                 iterations.Count >= maxSteps ||
@@ -120,6 +131,23 @@ namespace Vertrackt.Solver
                 CheckIfTrackForCrossedOldTrack(iterations, currentIteration, car)
                 );
             return needToTrackBack;
+        }
+
+        private static bool IsDeadEnd(Car car, Dictionary<int, HashSet<Tuple<Point, Point>>> deadEnds, int count, int maxSteps)
+        {
+            for (int i = count; i < maxSteps; i++)
+            {
+                if (deadEnds.ContainsKey(i))
+                {
+                    var hashSet = deadEnds[i];
+                    if (hashSet.Contains(Tuple.Create(car.Speed, car.Position)))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         private static bool IsAccSumInvalid(int count, Point sumAcc, int maxSteps)
@@ -244,12 +272,20 @@ namespace Vertrackt.Solver
             return new Result(iterations);
         }
 
-        private static Tuple<Iteration, Car> TrackBackOneStep(Stack<Iteration> iterations)
+        private static Tuple<Iteration, Car> TrackBackOneStep(Stack<Iteration> iterations, Car notPartOfSolution, Dictionary<int, HashSet<Tuple<Point, Point>>> deadEnds)
         {
+            AddToDeadEnds(notPartOfSolution, iterations.Count, deadEnds);
+
             var currentIteration = iterations.Pop().Next(iterations);
             var currentCar = currentIteration.CarBefore;
 
             return Tuple.Create(currentIteration, currentCar);
+        }
+
+        private static void AddToDeadEnds(Car notPartOfSolution, int count, Dictionary<int, HashSet<Tuple<Point, Point>>> deadEnds)
+        {
+            var hashSet = deadEnds.GetValueOrCreate(count, () => new HashSet<Tuple<Point, Point>>());
+            hashSet.Add(Tuple.Create(notPartOfSolution.Speed, notPartOfSolution.Position));
         }
     }
 }

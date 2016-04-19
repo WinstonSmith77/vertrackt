@@ -41,7 +41,7 @@ namespace Vertrackt.Geometry
 
         public List<Point> FilterByAngle(double angle)
         {
-            return _sortedForAngle.GetValueOrCreateType(angle, () =>
+            return _sortedForAngle.GetValueOrCreate(angle, () =>
             {
                 var result = AllWithoutEmpty.Where(point => Filter(point)).ToList();
 

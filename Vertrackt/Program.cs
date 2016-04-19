@@ -104,20 +104,20 @@ namespace Vertrackt
             var bb = new BoundingBox(new Point(start.X, start.Y), new Point(end.X, 320));
 
 
-            var boxesForProperEnd = new[]
+          /*  var boxesForProperEnd = new[]
             {
                   new BoundingBox(new Point(248, 240), new Point(500, 400)),
                   new BoundingBox(new Point(300, 200), new Point(500, 400))
-              };
+              };*/
 
             var auxEndPoint = new Point(250, 350);
             Func<Point, Point> auxEnd = point =>
             {
-                point = point.ScaleUp(scale);
+               /* point = point.ScaleUp(scale);
                 if (boxesForProperEnd.Any(box => box.IsInside(point)))
                 {
                     return end;
-                }
+                }*/
 
                 return auxEndPoint;
             };

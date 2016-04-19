@@ -9,7 +9,7 @@ namespace Vertrackt
 {
     public static class Helpers
     {
-        public static TV GetValueOrCreateType<TK, TV>(this IDictionary<TK, TV> dictionary, TK key, Func<TV> createValue)
+        public static TV GetValueOrCreate<TK, TV>(this IDictionary<TK, TV> dictionary, TK key, Func<TV> createValue)
         {
             if (!dictionary.ContainsKey(key))
             {
@@ -18,7 +18,6 @@ namespace Vertrackt
 
             return dictionary[key];
         }
-
 
         public static double DeltaAngle(double a, double b)
         {

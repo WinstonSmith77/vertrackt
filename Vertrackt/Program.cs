@@ -87,36 +87,50 @@ namespace Vertrackt
 
                 new LineD( new PointD(300, 300), d ),
 
-                new LineD(new PointD(0, 150), new PointD(500, 150)), //extra
-                new LineD(new PointD(200, 100), new PointD(250, 200)), //extra
-                new LineD(new PointD(250, 300), new PointD(300, 200) ),
-                new LineD(new Point(start.X - scale, start.Y +scale), new PointD(200,start.Y+  scale)),
-                new LineD(new Point(200 - scale, 200), new PointD(280,400)),
+
+
+                new LineD(new PointD(250, 300), new PointD(300, 300) ),
+                new LineD(new Point(start.X - scale, start.Y +scale), new PointD(start.X - scale, start.Y +scale)),
+               
               }.ToList();
 
          /*   var lastSolutionLinePoints = new int[] { 24, 36, 34, 36, 40, 36, 46, 46, 46, 54, 52, 64, 58, 64, 64, 54, 64, 44, 64, 44 };
-            var lastSolutionLines = LineD.CreateLists(lastSolutionLinePoints, scale, scale);
-            var lastSolutionLines2 = LineD.CreateLists(lastSolutionLinePoints, scale, -scale);
+              var lastSolutionLines = LineD.CreateLists(lastSolutionLinePoints, scale, scale);
+              var lastSolutionLines2 = LineD.CreateLists(lastSolutionLinePoints, scale, -scale);
 
-            lines.AddRange(lastSolutionLines);
-            lines.AddRange(lastSolutionLines2);*/
+              lines.AddRange(lastSolutionLines);
+              lines.AddRange(lastSolutionLines2);*/
 
-            var bb = new BoundingBox(new Point(start.X, start.Y), new Point(end.X, 320));
+            var bb = new BoundingBox(new Point(start.X, start.Y), new Point(end.X + 2, 320));
 
 
             var boxesForProperEnd = new[]
             {
-                  new BoundingBox(new Point(248, 240), new Point(500, 400)),
+                  new BoundingBox(new Point(248, 250), new Point(500, 400)),
                   new BoundingBox(new Point(300, 200), new Point(500, 400))
               };
 
-            var auxEndPoint = new Point(250, 350);
+
+            var boxesForAux2 = new[]
+            {
+                  new BoundingBox(new Point(248, 250), new Point(275, 400)),
+                 
+              };
+
+            var auxEndPoint = new Point(249, 300);
+            var auxEndPoint2 = new Point(301, 300);
+            var end1 = end;
             Func<Point, Point> auxEnd = point =>
             {
                 point = point.ScaleUp(scale);
+                if (boxesForAux2.Any(box => box.IsInside(point)))
+                {
+                    return auxEndPoint2;
+                }
+
                 if (boxesForProperEnd.Any(box => box.IsInside(point)))
                 {
-                    return end;
+                    return end1;
                 }
 
                 return auxEndPoint;

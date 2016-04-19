@@ -10,18 +10,17 @@ namespace Vertrackt.Solver
 {
     public static class Solver
     {
-        public static int FilterBase = 2;
-        public static int ScaleDown = 1;
-        public static int MaxSteps = 25;
-        public static bool SwapStartAndEnd = false;
+        public const int FilterBase = 2;
+        public const int ScaleDown = 2;
+        public const int MaxSteps = 25;
+        public const bool SwapStartAndEnd = false;
+        public const bool FilterDeadEnds = false;
 
 
         public static Result DoIt(Description desc)
         {
-            return DoIt(desc, dummy => { }, (dummy) => { }, true);
+            return DoIt(desc, dummy => { }, dummy => { }, true);
         }
-
-
 
         public static Result DoIt(Description desc, Action<Result> imediateResult, Action<Result> info, bool skipAtFirstSolution)
         {
@@ -115,7 +114,7 @@ namespace Vertrackt.Solver
         private static bool NeedToTrackBack(Description desc, Stack<Iteration> iterations,
             Car car, Iteration currentIteration, int maxSteps, Dictionary<int, HashSet<Tuple<Point, Point>>> deadEnds)
         {
-            if (IsDeadEnd(car, deadEnds, iterations.Count))
+            if (FilterDeadEnds && IsDeadEnd(car, deadEnds, iterations.Count))
             {
                 return true;
             }
@@ -260,7 +259,10 @@ namespace Vertrackt.Solver
 
         private static Tuple<Iteration, Car> TrackBackOneStep(Stack<Iteration> iterations, Car notPartOfSolution, Dictionary<int, HashSet<Tuple<Point, Point>>> deadEnds)
         {
-            AddToDeadEnds(notPartOfSolution, iterations.Count, deadEnds);
+            if (FilterDeadEnds)
+            {
+                AddToDeadEnds(notPartOfSolution, iterations.Count, deadEnds);
+            }
 
             var currentIteration = iterations.Pop().Next(iterations);
             var currentCar = currentIteration.CarBefore;

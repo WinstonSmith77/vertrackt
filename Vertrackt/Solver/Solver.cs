@@ -177,22 +177,8 @@ namespace Vertrackt.Solver
             }
         }
 
-        private static bool HasSichtLine(List<LineD> obstacles, Point position, Point end)
-        {
-            var line = new LineD(position, end);
 
-            foreach (var obstacle in obstacles)
-            {
-                if (obstacle.IntersectionAndOnBothLines(line, false) != null)
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-
-        public const int InfoAt = 500 * 1000;
+        private const int InfoAt = 500 * 1000;
 
 
         private static bool IsCrashWithObstacles(IEnumerable<LineD> obstacles, LineD? currentTrack)
